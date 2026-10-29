@@ -858,7 +858,7 @@ def s_cam2(d, t, D, S, si, SA):
     if S[0] + 3.0 < t < S[1] - 0.2:
         q = ev(t, S[0] + 6.5, 3.8)
         card(d, 30, 560, 330, 700, "Camera 2 trigger", col=YEL, tcol=YEL, sz=14)
-        text(d, 46, 604, "not sent by the line controller", 12, RED, "lm", "s")
+        text(d, 46, 604, "triggered by the flipper trigger", 12, YEL, "lm", "s")
         text(d, 46, 628, "start: flipper trigger", 12, TXT, "lm", "m")
         text(d, 46, 652, "delay counted in encoder pulses", 12, TXT, "lm", "m")
         text(d, 46, 676, f"{int(640 * q):,} / 640 pulses → capture", 12, CYAN, "lm", "monob")
@@ -994,7 +994,7 @@ def s_robot(d, t, D, S, si, SA):
         packet(d, WIRES["trig1"], seg(t, S[2] + 3.0, S[2] + 4.2), "PULSE", YEL)
     draw_log(d, si, t, SA)
 
-CONF = [97.5 - 0.004 * i + random.Random(i).uniform(-0.5, 0.5) - (0.01 * max(0, i - 120) ** 1.45) for i in range(200)]
+CONF = [97.2 + random.Random(i).uniform(-0.5, 0.5) - (7.5 if i >= 165 else 0) for i in range(200)]
 
 def s_bg(d, t, D, S, si, SA):
     header(d, "C · Running in the background", sub="V7 AI Solutions software on the server · 24/7")
@@ -1042,7 +1042,7 @@ def s_bg(d, t, D, S, si, SA):
             if len(pts) > 1: line(d, pts, GOLD, 2)
             if n > 1 and CONF[n - 1] < 92:
                 rect(d, x0 + 16, y1 - 40, x1 - 16, y1 - 12, fill=mix(PANEL, RED, .2), outline=RED, w=1.5, r=6)
-                text(d, (x0 + x1) / 2, y1 - 26, "⚠ confidence drifting: check light / rust", 12, RED, "mm", "b")
+                text(d, (x0 + x1) / 2, y1 - 26, "⚠ sudden dip in confidence score: check light / rust", 12, RED, "mm", "b")
             else:
                 text(d, x0 + 16, y1 - 22, "confidence score trend (example)", 11, DIM, "lm", "m")
         if i == 3:
@@ -1085,11 +1085,11 @@ def s_bg(d, t, D, S, si, SA):
             line(d, pts, YEL, 2)
             ph = lerp(gx0, gx1, cyc); line(d, [(ph, gy - 14), (ph, gy + 30)], TXT, 1)
             rect(d, x0 + 20, y0 + 130, x0 + 190, y0 + 190, fill=mix(PANEL, GREEN, .15), outline=GREEN, w=1.5, r=8)
-            text(d, x0 + 105, y0 + 152, "Server", 13, GREEN, "mm", "b"); text(d, x0 + 105, y0 + 172, "still running", 11, TXT, "mm", "m")
+            text(d, x0 + 105, y0 + 152, "Server", 13, GREEN, "mm", "b"); text(d, x0 + 105, y0 + 172, "running uninterrupted", 11, TXT, "mm", "m")
             rect(d, x0 + 210, y0 + 130, x1 - 20, y0 + 190, fill=mix(PANEL, YEL, .15 if dip else .05), outline=YEL, w=1.5, r=8)
             text(d, (x0 + 210 + x1 - 20) / 2, y0 + 152, "UPS", 13, YEL, "mm", "b")
             text(d, (x0 + 210 + x1 - 20) / 2, y0 + 172, "on battery" if dip else "standby", 11, TXT, "mm", "m")
-            text(d, x0 + 16, y1 - 22, "after a fault or power dip: restarts on its own", 11, DIM, "lm", "m")
+            text(d, x0 + 16, y1 - 22, "power out: UPS keeps it running · after a fault: auto restart", 11, DIM, "lm", "m")
 
 MULTI_FACES = ["burr", "rollover", "burr", "burr", "rollover", "burr", "rollover", "rollover", "burr", "rollover"]
 MULTI_ANG = [random.Random(50 + k).uniform(-60, 60) for k in range(10)]
@@ -1099,7 +1099,7 @@ def clock(tt):
     return f"10:{int(sec // 60):02d}:{sec % 60:06.3f}"
 
 def s_multi(d, t, D, S, si, SA):
-    header(d, "B · Ten rings in a row", sub="Detect · check side · flip if needed · measure angle · place")
+    header(d, "B · The full flow", sub="Detect · check side · flip if needed · measure angle · place")
     N, PICK, t0 = 10, 870.0, 1.0
     gap = clamp((D - 4.15) / 16.5, 1.0, 2.0); v = 120.0 / gap
     def xr(i, tt): return -30 + v * (tt - t0 - i * gap)
@@ -1201,7 +1201,7 @@ def s_gpu(d, t, D, S, si, SA):
             rect(d, 66 + i * 8.4, 328 + j * 11, 72 + i * 8.4, 336 + j * 11, fill=mix(PANEL, PURP, .9 if on else .25))
     if t > S[1]:
         rx0, ry0 = 460, 100
-        card(d, rx0, ry0, 1250, 270, "Real rings aren't perfect → an ML model copes better than fixed rules", col=mix(LINE, GOLD, ev(t, S[1], .5)), tcol=GOLD)
+        card(d, rx0, ry0, 1250, 270, "Rings aren't perfect → an ML model copes better than fixed rules", col=mix(LINE, GOLD, ev(t, S[1], .5)), tcol=GOLD)
         variants = [("clean", 0), ("rust", 1), ("oil", 2), ("scratches", 3), ("light changes", 4)]
         for k, (nm, _) in enumerate(variants):
             if t < S[1] + 2.5 + k * 0.7: continue
@@ -1223,7 +1223,7 @@ def s_gpu(d, t, D, S, si, SA):
         p = ev(t, S[2], .5)
         card(d, 460, 282, 1250, 420, "Trained beforehand", col=mix(LINE, PURP, p), tcol=PURP)
         steps = [("Sample rings", "from Technocraft", GOLD), ("Development server", "with a GPU card", PURP),
-                 ("Trained models", "side check + notches", GREEN), ("Server", "on the line", GREEN)]
+                 ("Trained models", "side check + slots", GREEN), ("Server", "on the line", GREEN)]
         for k, (a, b, c) in enumerate(steps):
             if t < S[2] + 1.0 + k * 1.3: continue
             bx = 480 + k * 192
@@ -1264,14 +1264,14 @@ def s_gpu(d, t, D, S, si, SA):
         text(d, 640, 679, "The GPU makes accurate, reliable ML possible, without slowing the line", 17, mix(BG, TXT, p), "mm", "b")
 
 def s_own(d, t, D, S, si, SA):
-    header(d, "Who owns what")
+    header(d, "Who owns which part of the solution")
     cols = [(40, 630, "V7 AI Solutions", "Vision software", GREEN, S[1],
              ["Ring-type setup + ML model training", "Sensor event → ring ID + count", "Camera 1: one ring, type, side",
-              "Signal 1: flip yes / no", "Camera 2: notch angle (ML)", "Signal 2: rotation angle",
+              "Signal 1: flip yes / no", "Camera 2: slot angle (ML)", "Signal 2: rotation angle",
               "Logging, monitoring, operator screen"]),
             (650, 1240, "Technocraft", "Line, robot + hardware", ORANGE, S[2],
              ["Conveyor", "Flip mechanism", "Robot, gripper + robot program", "Line controller (PLC) program",
-              "Pins", "Procures all hardware", "Sample rings for ML training"])]
+              "Pins", "Procures all hardware", "Technical information", "Sample rings for the ML training"])]
     for x0, x1, nm, sub, c, st, items in cols:
         if t < st - 0.3:
             rect(d, x0, 110, x1, 600, outline=(32, 40, 58), w=1.5, r=14); continue
@@ -1308,7 +1308,20 @@ def frame(si, t, TM):
     # overall progress bar
     tot = sum(x["dur"] for x in TM); done = sum(x["dur"] for x in TM[:si]) + t
     ImageDraw.Draw(img).rectangle((0, OH - 5, OW * done / tot, OH), fill=GREEN)
-    return img
+    return letterbox(img)
+
+BAR = 0.9   # content scale inside the cinematic bars
+
+def letterbox(img):
+    cw, ch = int(OW * BAR) // 2 * 2, int(OH * BAR) // 2 * 2
+    x0, y0 = (OW - cw) // 2, (OH - ch) // 2
+    small = img.resize((cw, ch), Image.LANCZOS)
+    out = Image.new("RGB", (OW, OH), (0, 0, 0))
+    # sides continue the frame's own edge colours, so only the top/bottom bars read as black
+    out.paste(small.crop((0, 0, 1, ch)).resize((x0, ch)), (0, y0))
+    out.paste(small.crop((cw - 1, 0, cw, ch)).resize((OW - x0 - cw, ch)), (x0 + cw, y0))
+    out.paste(small, (x0, y0))
+    return out
 
 def render_scene(si):
     TM = load_timing(); D = TM[si]["dur"]

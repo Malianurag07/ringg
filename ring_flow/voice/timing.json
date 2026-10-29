@@ -76,11 +76,11 @@
  },
  {
   "title": "B \u00b7 Camera 2 takes the picture",
-  "dur": 21.984,
+  "dur": 21.11,
   "starts": [
    0.4,
-   11.389,
-   17.992
+   10.514,
+   17.118
   ]
  },
  {
@@ -104,49 +104,49 @@
  },
  {
   "title": "C \u00b7 Running in the background",
-  "dur": 41.245,
+  "dur": 43.037,
   "starts": [
    0.4,
    3.724,
    9.265,
    14.941,
-   23.156,
-   29.149,
-   33.904
+   23.69,
+   29.682,
+   34.437
   ]
  },
  {
-  "title": "B \u00b7 Ten rings in a row",
+  "title": "B \u00b7 The full flow",
   "dur": 22.0,
   "starts": [
    0.4,
-   2.548,
-   7.913,
-   11.899,
-   17.212
+   2.185,
+   7.55,
+   11.536,
+   16.849
   ]
  },
  {
   "title": "D \u00b7 Why the GPU is needed",
-  "dur": 49.46,
+  "dur": 49.439,
   "starts": [
    0.4,
    2.874,
-   11.006,
-   19.222,
-   27.679,
-   36.563,
-   43.399
+   10.984,
+   19.2,
+   27.658,
+   36.541,
+   43.377
   ]
  },
  {
-  "title": "Who owns what",
-  "dur": 17.764,
+  "title": "Who owns which part of the solution",
+  "dur": 18.959,
   "starts": [
    0.4,
-   2.048,
-   8.874,
-   15.628
+   3.242,
+   10.068,
+   16.823
   ]
  }
 ]

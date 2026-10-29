@@ -50,7 +50,7 @@ SCRIPT = [
         'The flipper then turns burr-up rings over. Rollover-up rings pass straight through.',
     ]),
     ('B · Camera 2 takes the picture', [
-        'Camera two is not triggered by the line controller. The software takes the flipper trigger, calculates the delay in encoder pulses, and captures the image when the ring is centered.',
+        'Camera two is triggered by the flipper trigger. From that moment, the software calculates the delay in encoder pulses, and captures the image when the ring is centered.',
         'Camera two is also twelve megapixels, with a diffuse strobe, for a clean outline of the notches.',
         'And again, the image goes through the switch, to the server.',
     ]),
@@ -69,13 +69,13 @@ SCRIPT = [
         'Some things run in the background, all the time.',
         'Every image, decision, confidence score and signal is logged, by ring ID.',
         'The sensor count is compared with the rings processed, so no ring is missed unnoticed.',
-        'The confidence score is tracked over time, and an early alarm is raised if it drifts, for example, from rust or a failing light.',
+        'The confidence score is tracked over time, and an alarm is raised as soon as it suddenly dips, for example, from rust or a failing light.',
         'A heartbeat between the server and the line controller triggers a safe stop, if the link drops.',
         'The operator screen shows live status, alerts, and recovery steps.',
-        'After a fault or a power dip, everything restarts automatically, and the UPS covers short power cuts.',
+        'If the power goes out, the UPS keeps the server running, uninterrupted. And after a fault, everything restarts automatically.',
     ]),
-    ('B · Ten rings in a row', [
-        'Now, ten rings in a row.',
+    ('B · The full flow', [
+        'Now, the full flow.',
         'Each ring is detected, gets its ID, and camera one checks which side is up.',
         'Burr-up rings are flipped. Rollover-up rings pass straight through.',
         'Camera two measures the angle, and the robot places each ring in its own slot.',
@@ -83,15 +83,15 @@ SCRIPT = [
     ]),
     ('D · Why the GPU is needed', [
         'So, why do we need a GPU?',
-        'Real rings have rust, oil, scratches, and changing light. A trained ML model copes with this far better than fixed rules.',
+        'Rings can have rust, oil, scratches, and changing light. A trained ML model copes with this far better than fixed rules.',
         "The models are trained beforehand, on a development server with a GPU card, using images of Technocraft's sample rings.",
         'Training means millions of calculations over thousands of images. A GPU does them in parallel, so it is much faster.',
         "On the line, the server's GPU runs the models quickly and consistently, while the CPU handles the cameras, signals and logging.",
         'For a new ring type, Technocraft provides sample rings, and the model is retrained on the development server.',
         'So, the GPU makes accurate, reliable ML possible, without slowing the line.',
     ]),
-    ('Who owns what', [
-        'So, who does what?',
+    ('Who owns which part of the solution', [
+        'So, who owns which part of the solution?',
         'V7 AI Solutions owns all the vision software, from the sensor event to the two signals.',
         'Technocraft owns the conveyor, flipper, robot, line controller and pins, and procures the hardware.',
         'Thank you for watching.',
