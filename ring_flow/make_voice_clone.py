@@ -48,15 +48,20 @@ def main():
 
     def say(text):
         best = None
-        for sp in SPEEDS:
+        # very short phrases need a slower speed, or the model cannot produce any frames
+        speeds = SPEEDS if len(text.split()) >= 6 else [1.0, 0.95, 1.05, 0.9, 0.85]
+        for sp in speeds:
             g = tts.generate(text, ref_text, ref, rsr, sp, 4)
             a = np.array(g.samples, np.float32)
+            if len(a) < 0.3 * SR: continue
             # trim generated leading/trailing silence
             nz = np.where(np.abs(a) > 0.01)[0]
             if len(nz): a = a[max(0, nz[0] - 600): nz[-1] + 1200]
             e = wer(text, hear(a))
             if best is None or e < best[0]: best = (e, a, sp)
             if e == 0: break
+        if best is None:
+            raise RuntimeError("no audio for: " + text)
         print(f"   {best[0]:.2f} @{best[2]}  {text}", flush=True)
         return best[1], best[0]
 
