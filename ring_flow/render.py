@@ -844,7 +844,7 @@ def s_flip(d, t, D, S, si, SA):
     draw_log(d, si, t, SA)
 
 def s_cam2(d, t, D, S, si, SA):
-    x = lerp(FLIPX + 50, CAM2, ev(t, S[0] + 6.5, 3.8))
+    x = lerp(FLIPX + 50, CAM2, ev(t, S[0] + 5.3, 3.4))
     z = cam_zoom(t, S[1] - 0.2, S[2] - 0.6, D, CAM2)
     flash = 0.0
     ft = S[1] + 3.0
@@ -853,9 +853,9 @@ def s_cam2(d, t, D, S, si, SA):
     ring_on_belt(st, x + max(0, t - S[0] - 3.2) * 0.4, ang=37.4, face="rollover", lit=flash * .6, idlabel="#1042")
     header_step = 9 if t < S[1] else 10 if t < S[2] else 11
     full_plant(d, t, st)
-    if t > S[0] + 3.5: packet(d, WIRES["trig2"], seg(t, S[0] + 3.5, S[0] + 6.0), "FLIP TRIGGER + DELAY", YEL)
+    if t > S[0] + 2.8: packet(d, WIRES["trig2"], seg(t, S[0] + 2.8, S[0] + 5.0), "FLIP TRIGGER + DELAY", YEL)
     if S[0] + 3.0 < t < S[1] - 0.2:
-        q = ev(t, S[0] + 6.5, 3.8)
+        q = ev(t, S[0] + 5.3, 3.4)
         card(d, 30, 560, 330, 700, "Camera 2 trigger", col=YEL, tcol=YEL, sz=14)
         text(d, 46, 604, "triggered by the flipper trigger", 12, YEL, "lm", "s")
         text(d, 46, 628, "start: flipper trigger", 12, TXT, "lm", "m")
