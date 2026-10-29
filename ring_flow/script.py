@@ -72,14 +72,14 @@ SCRIPT = [
         'The confidence score is tracked over time, and an alarm is raised as soon as it suddenly dips, for example, from rust or a failing light.',
         'A heartbeat between the server and the line controller triggers a safe stop, if the link drops.',
         'The operator screen shows live status, alerts, and recovery steps.',
-        'If the power goes out, the UPS keeps the server running, uninterrupted. And after a fault, everything restarts automatically.',
+        'If the power goes out, the UPS keeps the server running, uninterrupted.',
     ]),
     ('B · The full flow', [
         'Now, the full flow.',
         'Each ring is detected, gets its ID, and camera one checks which side is up.',
         'Burr-up rings are flipped. Rollover-up rings pass straight through.',
         'Camera two measures the angle, and the robot places each ring in its own slot.',
-        'Ten rings. All rollover side up, all at the right angle.',
+        'All rings, rollover side up, at the right angle, each in its own slot.',
     ]),
     ('D · Why the GPU is needed', [
         'So, why do we need a GPU?',

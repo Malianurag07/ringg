@@ -542,7 +542,6 @@ def s_hw(d, t, D, S, si, SA):
         p = ev(t, S[6], .6)
         rect(d, 912, 665, 1253, 690, fill=mix(PANEL, GREEN, .12 * p), outline=mix(PANEL, GREEN, p), w=1.5, r=6)
         text(d, 1082, 677, "Specified by V7 AI Solutions · procured by Technocraft", 10.5, mix(PANEL, GREEN, p), "mm", "b")
-    text(d, 690, 548, "Technocraft line equipment shown in grey", 10.5, FAINT, "mm", "m")
 
 def s_sw(d, t, D, S, si, SA):
     header(d, "A · Setup: teaching the system", sub="Done once, before production")
@@ -994,14 +993,15 @@ def s_robot(d, t, D, S, si, SA):
         packet(d, WIRES["trig1"], seg(t, S[2] + 3.0, S[2] + 4.2), "PULSE", YEL)
     draw_log(d, si, t, SA)
 
-CONF = [97.2 + random.Random(i).uniform(-0.5, 0.5) - (7.5 if i >= 165 else 0) for i in range(200)]
+DIP = range(150, 156)   # one short, sudden dip, then back to normal
+CONF = [97.2 + random.Random(i).uniform(-0.5, 0.5) - (7.5 if i in DIP else 0) for i in range(200)]
 
 def s_bg(d, t, D, S, si, SA):
     header(d, "C · Running in the background", sub="V7 AI Solutions software on the server · 24/7")
     tiles = [(20, 96, 430, 396), (440, 96, 850, 396), (860, 96, 1270, 396),
              (20, 408, 430, 708), (440, 408, 850, 708), (860, 408, 1270, 708)]
     names = [("Logging & traceability", BLUE), ("Missed-ring check", RED), ("Confidence watch", GOLD),
-             ("Heartbeat", CYAN), ("Operator screen", GREEN), ("Automatic restart", YEL)]
+             ("Heartbeat", CYAN), ("Operator screen", GREEN), ("Uninterrupted power (UPS)", YEL)]
     for i, ((x0, y0, x1, y1), (nm, c)) in enumerate(zip(tiles, names)):
         st = S[i + 1] - 0.3
         if t < st:
@@ -1040,9 +1040,9 @@ def s_bg(d, t, D, S, si, SA):
             text(d, gx1, gy(92) + 10, "alarm level", 10, RED, "rm", "s")
             pts = [(lerp(gx0, gx1, k / 199), gy(CONF[k])) for k in range(n)]
             if len(pts) > 1: line(d, pts, GOLD, 2)
-            if n > 1 and CONF[n - 1] < 92:
+            if n > DIP.start:
                 rect(d, x0 + 16, y1 - 40, x1 - 16, y1 - 12, fill=mix(PANEL, RED, .2), outline=RED, w=1.5, r=6)
-                text(d, (x0 + x1) / 2, y1 - 26, "⚠ sudden dip in confidence score: check light / rust", 12, RED, "mm", "b")
+                text(d, (x0 + x1) / 2, y1 - 26, "⚠ sudden dip in confidence score → alarm: check light / rust", 12, RED, "mm", "b")
             else:
                 text(d, x0 + 16, y1 - 22, "confidence score trend (example)", 11, DIM, "lm", "m")
         if i == 3:
@@ -1089,7 +1089,7 @@ def s_bg(d, t, D, S, si, SA):
             rect(d, x0 + 210, y0 + 130, x1 - 20, y0 + 190, fill=mix(PANEL, YEL, .15 if dip else .05), outline=YEL, w=1.5, r=8)
             text(d, (x0 + 210 + x1 - 20) / 2, y0 + 152, "UPS", 13, YEL, "mm", "b")
             text(d, (x0 + 210 + x1 - 20) / 2, y0 + 172, "on battery" if dip else "standby", 11, TXT, "mm", "m")
-            text(d, x0 + 16, y1 - 22, "power out: UPS keeps it running · after a fault: auto restart", 11, DIM, "lm", "m")
+            text(d, x0 + 16, y1 - 22, "power out: the UPS keeps the server running, uninterrupted", 11, DIM, "lm", "m")
 
 MULTI_FACES = ["burr", "rollover", "burr", "burr", "rollover", "burr", "rollover", "rollover", "burr", "rollover"]
 MULTI_ANG = [random.Random(50 + k).uniform(-60, 60) for k in range(10)]
@@ -1160,15 +1160,15 @@ def s_multi(d, t, D, S, si, SA):
         packet(d, WIRES["cam2"], (t - tc2) / 0.7, "IMG", BLUE)
         packet(d, WIRES["plc_robot"], (t - tc2 - 0.8) / 0.5, "ANGLE", ORANGE)
     rect(d, 30, 560, 330, 700, fill=PANEL, outline=GREEN, w=2, r=10)
-    text(d, 48, 584, "Run counter", 14, GREEN, "lm", "b")
-    for k, (a, b, c) in enumerate((("Placed in slots", f"{filled} / 10", GREEN), ("Flipped (burr up)", str(flipped), GOLD),
-                                   ("Passed straight (rollover up)", str(passed), BLUE))):
+    text(d, 48, 584, "Every ring", 14, GREEN, "lm", "b")
+    for k, (a, c) in enumerate((("burr up → flipped", GOLD), ("rollover up → passes straight through", BLUE),
+                                ("angle measured → placed in its own slot", GREEN))):
         y = 616 + k * 26
-        text(d, 48, y, a, 12.5, DIM, "lm", "m"); text(d, 314, y, b, 15, c, "rm", "monob")
+        ell(d, 54, y, 4, fill=c); text(d, 66, y, a, 12.5, TXT, "lm", "m")
     if filled == N:
         p = ev(t, tp[-1] + CARRY, .6)
         rect(d, 1035, 352, 1255, 384, fill=mix(BG, GREEN, .2 * p), outline=mix(BG, GREEN, p), w=1.5, r=8)
-        text(d, 1145, 368, "10 / 10 rollover up · aligned", 12, mix(BG, GREEN, p), "mm", "b")
+        text(d, 1145, 368, "all rings rollover up · aligned", 12, mix(BG, GREEN, p), "mm", "b")
     extra = []
     for i in range(N):
         rid = f"#{1044 + i}"; burr = MULTI_FACES[i] == "burr"
@@ -1177,7 +1177,7 @@ def s_multi(d, t, D, S, si, SA):
         tt = tat(i, SENS1); extra.append((tt, clock(tt), f"{rid} sensor triggered · ID", RED))
         tt = tat(i, CAM1) + 0.7; extra.append((tt, clock(tt), f"{rid} {'BURR up → flip' if burr else 'ROLL up → pass'}", GOLD if burr else BLUE))
         tt = tat(i, CAM2) + 0.6; extra.append((tt, clock(tt), f"{rid} rotate {rot:.1f}°", GREEN))
-        tt = tp[i] + CARRY; extra.append((tt, clock(tt), f"{rid} placed in slot {i + 1}  ✓", GREEN))
+        tt = tp[i] + CARRY; extra.append((tt, clock(tt), f"{rid} placed in its slot  ✓", GREEN))
     extra.sort(key=lambda r: r[0])
     draw_log(d, si, t, SA, extra=extra)
 
@@ -1317,9 +1317,8 @@ def letterbox(img):
     x0, y0 = (OW - cw) // 2, (OH - ch) // 2
     small = img.resize((cw, ch), Image.LANCZOS)
     out = Image.new("RGB", (OW, OH), (0, 0, 0))
-    # sides continue the frame's own edge colours, so only the top/bottom bars read as black
-    out.paste(small.crop((0, 0, 1, ch)).resize((x0, ch)), (0, y0))
-    out.paste(small.crop((cw - 1, 0, cw, ch)).resize((OW - x0 - cw, ch)), (x0 + cw, y0))
+    # plain background at the sides, so only the top/bottom bars read as black
+    out.paste(BG, (0, y0, x0, y0 + ch)); out.paste(BG, (x0 + cw, y0, OW, y0 + ch))
     out.paste(small, (x0, y0))
     return out
 
