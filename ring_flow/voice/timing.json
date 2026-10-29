@@ -1,0 +1,138 @@
+[
+ {
+  "title": "Ring orientation cell",
+  "dur": 18.03,
+  "starts": [
+   0.6,
+   1.837,
+   7.744
+  ]
+ },
+ {
+  "title": "A \u00b7 Setup: the hardware",
+  "dur": 40.483,
+  "starts": [
+   0.6,
+   2.527,
+   13.457,
+   19.804,
+   26.597,
+   34.954
+  ]
+ },
+ {
+  "title": "A \u00b7 Setup: teaching the system",
+  "dur": 34.836,
+  "starts": [
+   0.6,
+   3.261,
+   9.458,
+   16.132,
+   25.573
+  ]
+ },
+ {
+  "title": "B \u00b7 A ring arrives",
+  "dur": 34.343,
+  "starts": [
+   0.6,
+   5.898,
+   10.132,
+   16.529,
+   22.755
+  ]
+ },
+ {
+  "title": "B \u00b7 Camera 1 takes the picture",
+  "dur": 25.748,
+  "starts": [
+   0.6,
+   3.263,
+   11.881,
+   16.997
+  ]
+ },
+ {
+  "title": "B \u00b7 The server checks the image",
+  "dur": 22.456,
+  "starts": [
+   0.6,
+   2.621,
+   10.294,
+   13.571,
+   19.593
+  ]
+ },
+ {
+  "title": "B \u00b7 Signal 1 and the flip",
+  "dur": 28.815,
+  "starts": [
+   0.6,
+   6.364,
+   18.998
+  ]
+ },
+ {
+  "title": "B \u00b7 Camera 2 takes the picture",
+  "dur": 21.962,
+  "starts": [
+   0.6,
+   9.484,
+   18.075
+  ]
+ },
+ {
+  "title": "B \u00b7 Measuring the angle",
+  "dur": 35.485,
+  "starts": [
+   0.6,
+   2.522,
+   15.379,
+   27.545
+  ]
+ },
+ {
+  "title": "B \u00b7 Signal 2 and the robot",
+  "dur": 19.559,
+  "starts": [
+   0.6,
+   6.84,
+   12.408
+  ]
+ },
+ {
+  "title": "C \u00b7 Running in the background",
+  "dur": 51.948,
+  "starts": [
+   0.6,
+   5.139,
+   13.691,
+   21.057,
+   30.628,
+   38.063,
+   43.219
+  ]
+ },
+ {
+  "title": "D \u00b7 Why the GPU is needed",
+  "dur": 58.721,
+  "starts": [
+   0.6,
+   3.348,
+   15.07,
+   25.825,
+   41.447,
+   50.589
+  ]
+ },
+ {
+  "title": "Who owns what",
+  "dur": 21.0,
+  "starts": [
+   0.6,
+   2.67,
+   9.895,
+   17.668
+  ]
+ }
+]
