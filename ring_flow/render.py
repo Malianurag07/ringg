@@ -409,7 +409,7 @@ LOG = [
     (7, lambda S: S[0] + 2.2, "10.452", "#1042 flip trigger + delay → cam2", ORANGE),
     (7, lambda S: S[1] + 3.0, "10.453", "#1042 cam2 diffuse strobe · shot", BLUE),
     (7, lambda S: S[2] + 2.8, "10.559", "#1042 cam2 image in · 12 MP", BLUE),
-    (8, lambda S: S[1] + 2.0, "10.802", "#1042 3 notches found", GREEN),
+    (8, lambda S: S[1] + 2.0, "10.802", "#1042 3 slots found", GREEN),
     (8, lambda S: S[1] + 6.5, "10.871", "#1042 rotate 37.4° CW (0–89°)", GREEN),
     (8, lambda S: S[3] + 2.5, "10.872", "#1042 matched to sensor ID  ✓", GREEN),
     (9, lambda S: S[0] + 2.0, "10.880", "#1042 SIGNAL 2 → robot: 37.4°", ORANGE),
@@ -577,12 +577,12 @@ def s_sw(d, t, D, S, si, SA):
                 if not on: continue
                 ring(d, cx, cy, 40, 0, "rollover", typ=k + 1, bg=PANEL)
                 text(d, cx, 284, f"Type {k + 1}", 14, TXT, "mm", "b")
-                text(d, cx, 304, f"{len(TYPES[k + 1])} notch" + ("es" if len(TYPES[k + 1]) > 1 else ""), 11.5, DIM, "mm", "m")
+                text(d, cx, 304, f"{len(TYPES[k + 1])} slot" + ("s" if len(TYPES[k + 1]) > 1 else ""), 11.5, DIM, "mm", "m")
                 if lt > 4.0:
                     text(d, cx, 324, f"target {[0, 15, 30, 45, 0][k]}°", 11.5, GOLD, "mm", "s")
                     dashed(d, [(cx, cy - 52), (cx, cy - 44)], GOLD, 2, 3, 2)
             if lt > 5.5:
-                text(d, 950, 368, "outline · notch layout · target angle · image settings tuned", 12, DIM, "mm", "m")
+                text(d, 950, 368, "outline · slot layout · target angle · image settings tuned", 12, DIM, "mm", "m")
         if i == 2:
             y = 490
             q = ev(lt, 0.5, 1)
@@ -876,7 +876,7 @@ def s_cam2(d, t, D, S, si, SA):
             card(d, 40, 560, 420, 690, "Camera 2 · 12 MP", col=mix(LINE, BLUE, p), tcol=BLUE)
             text(d, 56, 612, "diffuse strobe", 22, TXT, "lm", "b")
             text(d, 56, 644, "soft, even light, no glare", 12.5, DIM, "lm", "m")
-            text(d, 56, 666, "→ clean outline of the notches", 12.5, CYAN, "lm", "s")
+            text(d, 56, 666, "→ clean outline of the slots", 12.5, CYAN, "lm", "s")
         draw_log(d, si, t, SA)
     view()
 
@@ -885,7 +885,7 @@ def s_angle(d, t, D, S, si, SA):
     x0, y0, x1, y1 = 30, 112, 500, 582
     img_frame(d, x0, y0, x1, y1, "Camera 2 image · #1042 · 12 MP", BLUE)
     cx, cy, r = 265, 350, 150
-    ang = 37.4  # ring rotation; the key notch points at 90° + ang
+    ang = 37.4  # ring rotation; the key slot points at 90° + ang
     ring(d, cx, cy, r, ang, "rollover", bg=(36, 38, 44), photo=True)
     key = ang + 90
     if t > S[1] + 0.3:
@@ -908,7 +908,7 @@ def s_angle(d, t, D, S, si, SA):
     rx0 = 520
     card(d, rx0, 112, 885, 700, "Result", col=LINE)
     if t > S[1] + 2.0:
-        text(d, rx0 + 18, 160, "Notches found", 13.5, DIM, "lm", "m")
+        text(d, rx0 + 18, 160, "Slots found", 13.5, DIM, "lm", "m")
         text(d, rx0 + 18, 182, "3 (Type 3 layout)", 16, GREEN, "lm", "b"); tick(d, 860, 170, 16)
     if t > S[1] + 6.0:
         p = ev(t, S[1] + 6.0, .5)
@@ -924,7 +924,7 @@ def s_angle(d, t, D, S, si, SA):
     if t > S[2]:
         p = ev(t, S[2], .5)
         rect(d, rx0 + 14, 350, 871, 560, fill=mix(PANEL, PURP, .1 * p), outline=mix(PANEL, PURP, p), w=2, r=10)
-        text(d, rx0 + 30, 374, "How the notches are found", 14, PURP, "lm", "b")
+        text(d, rx0 + 30, 374, "How the slots are found", 14, PURP, "lm", "b")
         rect(d, rx0 + 30, 396, 855, 466, fill=mix(PANEL, PURP, .16), outline=PURP, w=2, r=8)
         text(d, (rx0 + 30 + 855) / 2, 420, "ML model", 19, TXT, "mm", "b")
         text(d, (rx0 + 30 + 855) / 2, 446, "runs on the server's GPU", 11.5, DIM, "mm", "m")
@@ -941,7 +941,7 @@ def s_angle(d, t, D, S, si, SA):
         arrow(d, x + 6, 640, x + 30, 640, DIM, 2)
         x = chip(d, x + 36, 640, "camera 2", BLUE, 12.5, "s")
         tick(d, 856, 640, 16)
-    text(d, 265, 610, "Notch finding: ML model", 14, TXT, "mm", "s")
+    text(d, 265, 610, "Slot finding: ML model", 14, TXT, "mm", "s")
     text(d, 265, 632, "trained beforehand on images of Technocraft sample rings", 12, DIM, "mm", "m")
     draw_log(d, si, t, SA, box=(900, 100, 1265, 700))
 

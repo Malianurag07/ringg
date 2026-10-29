@@ -20,7 +20,7 @@ SCRIPT = [
     ('A · Setup: teaching the system', [
         'Next, a one-time software setup.',
         'A ring of known size sets the scale, from pixels to millimeters.',
-        'Each of the five ring types is recorded: its outline, its notches, and its target angle.',
+        'Each of the five ring types is recorded: its outline, its slots, and its target angle.',
         'The trigger delay is set, and the rotation direction is agreed with the Technocraft team.',
         'Finally, the signal link with the line controller is agreed, including what happens if it drops.',
     ]),
@@ -51,13 +51,13 @@ SCRIPT = [
     ]),
     ('B · Camera 2 takes the picture', [
         'Camera two is triggered by the flipper trigger. From that moment, the software calculates the delay in encoder pulses, and captures the image when the ring is centered.',
-        'Camera two is also twelve megapixels, with a diffuse strobe, for a clean outline of the notches.',
+        'Camera two is also twelve megapixels, with a diffuse strobe, for a clean outline of the slots.',
         'And again, the image goes through the switch, to the server.',
     ]),
     ('B · Measuring the angle', [
         'Now, the angle.',
-        'The software finds the notches, and works out how far the ring must turn, from zero to about eighty-nine degrees, always in the agreed direction.',
-        "The notches are found by an ML model, trained on images of Technocraft's sample rings.",
+        'The software finds the slots, and works out how far the ring must turn, from zero to about eighty-nine degrees, always in the agreed direction.',
+        "The slots are found by an ML model, trained on images of Technocraft's sample rings.",
         "The result is matched to the ring's ID, so the right angle goes with the right ring.",
     ]),
     ('B · Signal 2 and the robot', [
@@ -78,7 +78,7 @@ SCRIPT = [
         'Now, the full flow.',
         'Each ring is detected, gets its ID, and camera one checks which side is up.',
         'Burr-up rings are flipped. Rollover-up rings pass straight through.',
-        'Camera two measures the angle, and the robot places each ring in its own slot.',
+        'Camera two measures the angle, and the robot picks up each ring, rotates it to the correct angle, and places it in its own slot.',
         'All rings, rollover side up, at the right angle, each in its own slot.',
     ]),
     ('D · Why the GPU is needed', [
