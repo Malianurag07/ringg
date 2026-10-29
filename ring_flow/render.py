@@ -1,4 +1,4 @@
-# Renders the ring orientation cell walkthrough video.
+# Renders the "Computer Vision for Ring Side Identification and Angular Orientation" video.
 # Needs voice/ (from make_voice.py). Usage: python render.py [scene ...]
 import json, math, os, random, shutil, subprocess, sys
 from contextlib import contextmanager
@@ -418,7 +418,7 @@ LOG = [
     (9, lambda S: S[2] + 3.1, "13.112", "#1043 ID assigned · count 1043", TXT),
 ]
 
-def draw_log(d, si, t, S_all, box=LOGBOX, title="V7 AI Solutions · live log", extra=()):
+def draw_log(d, si, t, S_all, box=LOGBOX, title="Live log", extra=()):
     x0, y0, x1, y1 = box
     rect(d, x0, y0, x1, y1, fill=(10, 14, 22), outline=(52, 64, 88), w=2, r=10)
     for i, c in enumerate((RED, YEL, GREEN)): ell(d, x0 + 16 + i * 14, y0 + 16, 4, fill=mix(BG, c, .7))
@@ -526,7 +526,7 @@ def s_hw(d, t, D, S, si, SA):
              (S[2] + 0.3, "Ring light, diffuse (cam 1: optional), strobe", GOLD), (S[3] + 0.6, "Presence sensor", RED),
              (S[3] + 3.5, "Belt encoder (if the line has none)", CYAN), (S[4] + 1.0, "Industrial Ethernet switch + cabling", CYAN),
              (S[4] + 3.4, "Server (CPU + GPU) in a cooled cabinet", GREEN), (S[4] + 5.6, "UPS", YEL),
-             (S[5] + 0.5, "ML training workstation + GPU card", PURP)]
+             (S[5] + 0.5, "Development server + GPU card (ML training)", PURP)]
     for i, (tt, s, c) in enumerate(items):
         if t >= tt:
             y = 452 + i * 24
@@ -534,8 +534,8 @@ def s_hw(d, t, D, S, si, SA):
     if t >= S[5]:
         p = ev(t, S[5], .6)
         card(d, 30, 560, 330, 700, "ML models: trained beforehand", col=mix(LINE, PURP, p), tcol=PURP, sz=14)
-        text(d, 46, 606, "ring images from Technocraft", 12, TXT, "lm", "m")
-        arrow(d, 46, 628, 70, 628, PURP, 2); text(d, 78, 628, "ML workstation + GPU card", 12, TXT, "lm", "s")
+        text(d, 46, 606, "sample rings from Technocraft → images", 12, TXT, "lm", "m")
+        arrow(d, 46, 628, 70, 628, PURP, 2); text(d, 78, 628, "development server + GPU card", 12, TXT, "lm", "s")
         arrow(d, 46, 652, 70, 652, PURP, 2); text(d, 78, 652, "trained models", 12, TXT, "lm", "m")
         arrow(d, 46, 676, 70, 676, PURP, 2); text(d, 78, 676, "loaded onto the server", 12, GREEN, "lm", "s")
     if t >= S[6]:
@@ -794,7 +794,7 @@ def s_check(d, t, D, S, si, SA):
         text(d, rx0 + 30, 651, "Total time", 14, DIM, "lm", "m")
         text(d, 855, 651, "under 1 s", 22, GREEN, "rm", "b")
     text(d, 265, 610, "ML model on the server", 14, TXT, "mm", "s")
-    text(d, 265, 632, "trained beforehand on ring images from Technocraft", 12, DIM, "mm", "m")
+    text(d, 265, 632, "trained beforehand on images of Technocraft sample rings", 12, DIM, "mm", "m")
     draw_log(d, si, t, SA, box=(900, 100, 1265, 700))
 
 def s_flip(d, t, D, S, si, SA):
@@ -930,8 +930,8 @@ def s_angle(d, t, D, S, si, SA):
         text(d, (rx0 + 30 + 855) / 2, 420, "ML model", 19, TXT, "mm", "b")
         text(d, (rx0 + 30 + 855) / 2, 446, "runs on the server's GPU", 11.5, DIM, "mm", "m")
         if t > S[2] + 2.5:
-            text(d, rx0 + 30, 494, "trained beforehand on images of real rings", 13, TXT, "lm", "m")
-            text(d, rx0 + 30, 518, "received from Technocraft", 13, TXT, "lm", "m")
+            text(d, rx0 + 30, 494, "trained beforehand on images of sample rings", 13, TXT, "lm", "m")
+            text(d, rx0 + 30, 518, "provided by Technocraft", 13, TXT, "lm", "m")
     if t > S[3]:
         p = ev(t, S[3], .5)
         rect(d, rx0 + 14, 576, 871, 686, fill=mix(PANEL, GREEN, .12 * p), outline=mix(PANEL, GREEN, p), w=2, r=10)
@@ -943,7 +943,7 @@ def s_angle(d, t, D, S, si, SA):
         x = chip(d, x + 36, 640, "camera 2", BLUE, 12.5, "s")
         tick(d, 856, 640, 16)
     text(d, 265, 610, "Notch finding: ML model", 14, TXT, "mm", "s")
-    text(d, 265, 632, "trained beforehand on ring images from Technocraft", 12, DIM, "mm", "m")
+    text(d, 265, 632, "trained beforehand on images of Technocraft sample rings", 12, DIM, "mm", "m")
     draw_log(d, si, t, SA, box=(900, 100, 1265, 700))
 
 def s_robot(d, t, D, S, si, SA):
@@ -1222,7 +1222,7 @@ def s_gpu(d, t, D, S, si, SA):
     if t > S[2]:
         p = ev(t, S[2], .5)
         card(d, 460, 282, 1250, 420, "Trained beforehand", col=mix(LINE, PURP, p), tcol=PURP)
-        steps = [("Ring images", "from Technocraft", GOLD), ("ML workstation", "with a GPU card", PURP),
+        steps = [("Sample rings", "from Technocraft", GOLD), ("Development server", "with a GPU card", PURP),
                  ("Trained models", "side check + notches", GREEN), ("Server", "on the line", GREEN)]
         for k, (a, b, c) in enumerate(steps):
             if t < S[2] + 1.0 + k * 1.3: continue
@@ -1249,7 +1249,7 @@ def s_gpu(d, t, D, S, si, SA):
         p = ev(t, S[5], .5)
         card(d, 712, 432, 1250, 640, "New ring type?", col=mix(LINE, GREEN, p), tcol=GREEN)
         cx, cy, R = 980, 540, 66
-        steps = ["new ring type", "Technocraft sends\nnew images", "retrain the model", "update the\nserver"]
+        steps = ["new ring type", "Technocraft provides\nnew rings", "retrain on the\ndevelopment server", "update the\nline server"]
         for k, s_ in enumerate(steps):
             a = math.radians(90 - k * 90)
             px, py = cx + math.cos(a) * R * 1.75, cy - math.sin(a) * R * 0.95
@@ -1271,7 +1271,7 @@ def s_own(d, t, D, S, si, SA):
               "Logging, monitoring, operator screen"]),
             (650, 1240, "Technocraft", "Line, robot + hardware", ORANGE, S[2],
              ["Conveyor", "Flip mechanism", "Robot, gripper + robot program", "Line controller (PLC) program",
-              "Pins", "Procures all hardware", "Ring images for ML training"])]
+              "Pins", "Procures all hardware", "Sample rings for ML training"])]
     for x0, x1, nm, sub, c, st, items in cols:
         if t < st - 0.3:
             rect(d, x0, 110, x1, 600, outline=(32, 40, 58), w=1.5, r=14); continue
@@ -1285,7 +1285,7 @@ def s_own(d, t, D, S, si, SA):
     if t > S[3]:
         p = ev(t, S[3], .8)
         text(d, 640, 650, "Thanks for watching", 30, mix(BG, TXT, p), "mm", "b")
-        text(d, 640, 688, "V7 AI Solutions × Technocraft · ring orientation cell", 14, mix(BG, DIM, p), "mm", "m")
+        text(d, 640, 688, "Computer Vision for Ring Side Identification and Angular Orientation", 14, mix(BG, DIM, p), "mm", "m")
 
 SCENES = [s_intro, s_hw, s_sw, s_arrive, s_cam1, s_check, s_flip, s_cam2, s_angle, s_robot, s_bg, s_multi, s_gpu, s_own]
 

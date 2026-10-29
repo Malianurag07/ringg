@@ -1,10 +1,10 @@
-# Voice-over script for the ring orientation cell walkthrough.
+# Voice-over script for the "Computer Vision for Ring Side Identification and Angular Orientation" video.
 # One entry per scene: (on-screen title, [spoken sentences]).
 # Spoken text uses US spellings so the TTS pronounces them correctly.
 SCRIPT = [
     ("Computer Vision for Ring Side Identification and Angular Orientation", [
         "Hi there.",
-        "In the next few minutes, I'll walk you through the ring orientation cell that V seven A I Solutions is building with Technocraft.",
+        "In the next few minutes, I'll walk you through Computer Vision for Ring Side Identification and Angular Orientation, the system V7 AI Solutions is building with Technocraft.",
         "Just so you know, everything you'll see here is a theoretical estimate, visualized to help us define the scope.",
         "We'll start with how everything gets set up, and then we'll follow a single ring, from the moment it lands on the belt, right up to when the robot drops it onto the pins.",
     ]),
@@ -14,8 +14,8 @@ SCRIPT = [
         "Camera one gets a low-angle ring light, plus a diffuse light. Camera two just gets a diffuse light.",
         "Right before camera one, there's a presence sensor. And if the line doesn't already have a belt encoder, we add one.",
         "Everything connects through an industrial Ethernet switch to the server, which sits in a cooled cabinet, and runs off a UPS.",
-        "The M L models themselves are trained beforehand, on a machine learning workstation with a GPU card, using images of rings received from Technocraft.",
-        "V seven A I Solutions specifies all of this hardware, and Technocraft procures it for the line.",
+        "The M L models themselves are trained beforehand, on a development server with a GPU card, using images of sample rings provided by Technocraft.",
+        "V7 AI Solutions specifies all of this hardware, and Technocraft procures it for the line.",
     ]),
     ("A · Setup: teaching the system", [
         "Then there's the one-time software setup.",
@@ -57,7 +57,7 @@ SCRIPT = [
     ("B · Measuring the angle", [
         "Now we work out the angle.",
         "The software finds the notches, figures out where they're pointing, and calculates how far the ring needs to turn. That's anywhere from zero, up to about eighty-nine degrees, always in the direction we agreed.",
-        "The notches are found by an M L model, trained beforehand on images of real rings from Technocraft.",
+        "The notches are found by an M L model, trained beforehand on images of sample rings provided by Technocraft.",
         "Either way, the result gets matched back to the ring's ID from the sensor, so the right angle always goes with the right ring.",
     ]),
     ("B · Signal 2 and the robot", [
@@ -84,15 +84,15 @@ SCRIPT = [
     ("D · Why the GPU is needed", [
         "So, why do we need a GPU?",
         "Real rings aren't perfect. There's rust, oil, scratches, and lighting that slowly changes over time. An M L model, trained on lots of real ring images, copes with that much better than fixed rules.",
-        "These models are trained beforehand, on a machine learning workstation with a GPU card, using images of rings received from Technocraft.",
+        "These models are trained beforehand, on a development server with a GPU card, using images of sample rings provided by Technocraft.",
         "Training means going through thousands of images, again and again. That's millions of calculations, and a GPU does them in parallel, so training is much, much faster.",
         "On the line, the server's GPU runs the trained models, so each picture is checked in a blink, and just as fast every time, while the processor carries on with the cameras, the signals and the logging.",
-        "And when a new ring type comes along, Technocraft sends new images, the model is retrained, and then updated on the server.",
+        "And when a new ring type comes along, Technocraft provides new sample rings, we capture images of them, retrain the model on the development server, and then update it on the line server.",
         "So the GPU is what makes accurate, reliable M L possible, without ever slowing the line down.",
     ]),
     ("Who owns what", [
         "So, to sum up who does what.",
-        "V seven A I Solutions owns all the vision software, from the moment the sensor fires, right through to those two signals.",
+        "V7 AI Solutions owns all the vision software, from the moment the sensor fires, right through to those two signals.",
         "Technocraft owns the conveyor, the flip mechanism, the robot, the line controller and the pins, and procures all the hardware.",
         "And that's the whole flow. Thanks for watching.",
     ]),

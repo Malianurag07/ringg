@@ -1,17 +1,17 @@
 [
  {
   "title": "Computer Vision for Ring Side Identification and Angular Orientation",
-  "dur": 26.976,
+  "dur": 30.944,
   "starts": [
    0.6,
    1.837,
-   9.898,
-   16.69
+   13.866,
+   20.658
   ]
  },
  {
   "title": "A \u00b7 Setup: the hardware",
-  "dur": 51.659,
+  "dur": 51.958,
   "starts": [
    0.6,
    2.484,
@@ -19,7 +19,7 @@
    19.805,
    26.691,
    34.579,
-   44.85
+   44.893
   ]
  },
  {
@@ -85,12 +85,12 @@
  },
  {
   "title": "B \u00b7 Measuring the angle",
-  "dur": 29.996,
+  "dur": 30.764,
   "starts": [
    0.6,
    2.504,
    15.272,
-   22.056
+   22.824
   ]
  },
  {
@@ -128,25 +128,25 @@
  },
  {
   "title": "D \u00b7 Why the GPU is needed",
-  "dur": 63.605,
+  "dur": 66.955,
   "starts": [
    0.6,
    2.79,
    16.152,
-   25.21,
-   36.321,
-   48.788,
-   56.561
+   25.124,
+   36.236,
+   48.702,
+   59.911
   ]
  },
  {
   "title": "Who owns what",
-  "dur": 22.005,
+  "dur": 22.069,
   "starts": [
    0.6,
    2.675,
-   10.726,
-   18.673
+   10.79,
+   18.737
   ]
  }
 ]
