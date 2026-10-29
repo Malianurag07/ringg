@@ -1,0 +1,1 @@
+Why 12 megapixels? Angle accuracy depends on how many pixels cover the disc and how precisely the centre and the feature are located. More pixels give a more precise angle and a clearer view of the burr edge. The camera resolution is finalised from the disc size and the field of view during testing.

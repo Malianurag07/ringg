@@ -1,0 +1,1 @@
+Discs arrive on a moving conveyor at random. They are at any position, any angle, and either face up. Each disc has two sides: the burr side, with a sharp raised edge from stamping, and the rollover side, with a rounded edge. Every disc must end up rollover side up, turned to the correct angle, and placed in its own slot. This system does that automatically, one disc at a time.

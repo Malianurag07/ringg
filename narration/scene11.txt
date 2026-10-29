@@ -1,0 +1,1 @@
+To recap: Camera 1 finds the side. The flipper corrects it. Camera 2 measures the angle. The robot picks, rotates and places the disc into its slot, rollover side up, every time.

@@ -1,0 +1,1 @@
+After Camera 2, the line computer sends one instruction per disc to the PLC: the pick position, the belt count at the moment of the picture, and the rotation needed. The robot follows the belt, picks the disc, rotates it by the measured amount, and places it into the slot that matches its shape. Every disc lands rollover side up, at the correct angle, in its correct place.
