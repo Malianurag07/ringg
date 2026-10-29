@@ -6,6 +6,7 @@ through, the background tasks, why the GPU is needed, and who owns what.
 
 - `script.py`: the voice-over text, one entry per scene.
 - `make_voice.py`: makes `voice/sceneNN.wav` and `voice/timing.json` with Kokoro TTS (offline).
+- `make_voice_vctk.py`: the current voice-over. Indian English female voice (VCTK speaker p248, VITS via sherpa-onnx), every sentence checked with Whisper.
 - `make_voice_clone.py`: the same, in a cloned voice (ZipVoice via sherpa-onnx), with every phrase checked by Whisper speech recognition and regenerated if wrong. The reference voice sample is not stored in the repo.
 - `render.py`: draws the animation, synced to the sentence timings, and muxes the audio.
 
