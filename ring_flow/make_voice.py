@@ -7,8 +7,9 @@ from script import SCRIPT
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "voice")
-VOICE, SPEED, SR = "af_heart", 1.0, 24000
-LEAD, TAIL = 0.6, 0.9          # silence before / after each scene
+VOICE, SPEED, SR = "hf_alpha", 1.0, 24000   # Indian English, female
+LEAD, TAIL = 0.4, 0.6          # silence before / after each scene
+MIN_DUR = {11: 22.0}           # the ten-ring run needs time for all ten rings
 
 def main():
     k = Kokoro(sys.argv[1], sys.argv[2])
@@ -25,10 +26,13 @@ def main():
             parts.append(a.astype(np.float32)); t += len(a) / SR
             if i < len(sents) - 1:
                 # natural, slightly uneven breathing gaps between sentences
-                gap = rnd.uniform(0.32, 0.5)
+                gap = rnd.uniform(0.28, 0.42)
                 parts.append(np.zeros(int(gap * SR), np.float32)); t += gap
-        parts.append(np.zeros(int(TAIL * SR), np.float32)); t += TAIL
-        sf.write(os.path.join(OUT, f"scene{si:02d}.wav"), np.concatenate(parts), SR)
+        tail = max(TAIL, MIN_DUR.get(si, 0) - t)
+        parts.append(np.zeros(int(tail * SR), np.float32)); t += tail
+        audio = np.concatenate(parts)
+        audio *= 0.89 / max(1e-6, np.abs(audio).max())   # even loudness across scenes
+        sf.write(os.path.join(OUT, f"scene{si:02d}.wav"), audio, SR)
         timing.append({"title": title, "dur": round(t, 3), "starts": starts})
         print(si, title, round(t, 1), flush=True)
     with open(os.path.join(OUT, "timing.json"), "w") as f:

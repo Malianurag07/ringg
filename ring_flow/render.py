@@ -405,10 +405,10 @@ LOG = [
     (5, lambda S: S[4] + 0.4, "08.853", "#1042 side check done (< 1 s)", GREEN),
     (6, lambda S: S[0] + 2.4, "08.860", "#1042 SIGNAL 1 → PLC: FLIP = YES", ORANGE),
     (6, lambda S: S[0] + 3.4, "08.871", "PLC ack · signal 1", FAINT),
-    (6, lambda S: S[2] + 6.5, "10.410", "#1042 flip done (PLC)", GOLD),
+    (6, lambda S: S[2] + 4.0, "10.410", "#1042 flip done (PLC)", GOLD),
     (7, lambda S: S[0] + 2.2, "10.452", "#1042 flip trigger + delay → cam2", ORANGE),
     (7, lambda S: S[1] + 3.0, "10.453", "#1042 cam2 diffuse strobe · shot", BLUE),
-    (7, lambda S: S[2] + 2.0, "10.559", "#1042 cam2 image in · 12 MP", BLUE),
+    (7, lambda S: S[2] + 2.8, "10.559", "#1042 cam2 image in · 12 MP", BLUE),
     (8, lambda S: S[1] + 2.0, "10.802", "#1042 3 notches found", GREEN),
     (8, lambda S: S[1] + 6.5, "10.871", "#1042 rotate 37.4° CW (0–89°)", GREEN),
     (8, lambda S: S[3] + 2.5, "10.872", "#1042 matched to sensor ID  ✓", GREEN),
@@ -799,9 +799,9 @@ def s_check(d, t, D, S, si, SA):
 
 def s_flip(d, t, D, S, si, SA):
     x = CAM1 + 12
-    if t > S[2] + 1.0: x = lerp(CAM1 + 12, FLIPX, ev(t, S[2] + 1.0, 3.0))
-    fl = ev(t, S[2] + 4.2, 1.8)
-    after = lerp(FLIPX, FLIPX + 50, ev(t, S[2] + 6.4, D - S[2] - 6.6))
+    if t > S[2] + 0.6: x = lerp(CAM1 + 12, FLIPX, ev(t, S[2] + 0.6, 1.8))
+    fl = ev(t, S[2] + 2.5, 1.4)
+    after = lerp(FLIPX, FLIPX + 50, ev(t, S[2] + 4.0, max(0.3, D - S[2] - 4.2)))
     if fl >= 1: x = after
     face = "burr" if fl < 0.5 else "rollover"
     sx = math.cos(math.pi * fl) if fl < 0.5 else -math.cos(math.pi * fl)
@@ -821,7 +821,7 @@ def s_flip(d, t, D, S, si, SA):
     header(d, "B · Signal 1 and the flip", step=step)
     full_plant(d, t, st)
     if t > S[0] + 0.8: packet(d, WIRES["srv_plc"], seg(t, S[0] + 0.8, S[0] + 2.4), "SIGNAL 1: FLIP = YES", GREEN)
-    if t > S[2] + 0.5: packet(d, WIRES["plc_flip"], seg(t, S[2] + 0.5, S[2] + 2.5), "FLIP", ORANGE)
+    if t > S[2] + 0.3: packet(d, WIRES["plc_flip"], seg(t, S[2] + 0.3, S[2] + 1.5), "FLIP", ORANGE)
     if t > S[0] + 2.4 and t < S[1]:
         chip(d, 690, 560, "Burr up + confident → FLIP = YES", GREEN, 12.5, "s", anchor="m")
     if S[1] - 0.2 < t < S[2] + 0.3:
@@ -845,7 +845,7 @@ def s_flip(d, t, D, S, si, SA):
     draw_log(d, si, t, SA)
 
 def s_cam2(d, t, D, S, si, SA):
-    x = lerp(FLIPX + 50, CAM2, ev(t, S[0] + 9.5, 4.0))
+    x = lerp(FLIPX + 50, CAM2, ev(t, S[0] + 6.5, 3.8))
     z = cam_zoom(t, S[1] - 0.2, S[2] - 0.6, D, CAM2)
     flash = 0.0
     ft = S[1] + 3.0
@@ -854,9 +854,9 @@ def s_cam2(d, t, D, S, si, SA):
     ring_on_belt(st, x + max(0, t - S[0] - 3.2) * 0.4, ang=37.4, face="rollover", lit=flash * .6, idlabel="#1042")
     header_step = 9 if t < S[1] else 10 if t < S[2] else 11
     full_plant(d, t, st)
-    if t > S[0] + 6.0: packet(d, WIRES["trig2"], seg(t, S[0] + 6.0, S[0] + 9.0), "FLIP TRIGGER + DELAY", YEL)
+    if t > S[0] + 3.5: packet(d, WIRES["trig2"], seg(t, S[0] + 3.5, S[0] + 6.0), "FLIP TRIGGER + DELAY", YEL)
     if S[0] + 3.0 < t < S[1] - 0.2:
-        q = ev(t, S[0] + 9.5, 4.0)
+        q = ev(t, S[0] + 6.5, 3.8)
         card(d, 30, 560, 330, 700, "Camera 2 trigger", col=YEL, tcol=YEL, sz=14)
         text(d, 46, 604, "not sent by the line controller", 12, RED, "lm", "s")
         text(d, 46, 628, "start: flipper trigger", 12, TXT, "lm", "m")
@@ -867,9 +867,9 @@ def s_cam2(d, t, D, S, si, SA):
         pts = ring_pts(rx, 262, 28, 37.4, 3, 1, 1.0)
         line(d, pts + [pts[0]], mix(BELT, CYAN, ev(t, S[1] + 3.2, .6)), 1.6)
     if t > S[2]:
-        p = seg(t, S[2] + 0.6, S[2] + 2.6)
+        p = seg(t, S[2] + 0.5, S[2] + 2.2)
         packet(d, WIRES["cam2"], p, "IMAGE 12 MP", BLUE)
-        if p >= 1: packet(d, WIRES["sw_srv"], seg(t, S[2] + 2.6, S[2] + 3.3), "IMG", BLUE)
+        if p >= 1: packet(d, WIRES["sw_srv"], seg(t, S[2] + 2.2, S[2] + 2.8), "IMG", BLUE)
     with screen():
         header(d, "B · Camera 2 takes the picture", step=header_step)
         if z > 0.3 and t > S[1] + 0.3:
@@ -1101,11 +1101,11 @@ def clock(tt):
 def s_multi(d, t, D, S, si, SA):
     header(d, "B · Ten rings in a row", sub="Detect · check side · flip if needed · measure angle · place")
     N, PICK, t0 = 10, 870.0, 1.0
-    gap = clamp((D - 4.25) / 16.5, 1.35, 2.0); v = 120.0 / gap
+    gap = clamp((D - 4.15) / 16.5, 1.0, 2.0); v = 120.0 / gap
     def xr(i, tt): return -30 + v * (tt - t0 - i * gap)
     def tat(i, x): return t0 + i * gap + (x + 30) / v
     tp = [tat(i, PICK) for i in range(N)]
-    CARRY, BACK = 0.75, 0.6
+    CARRY, BACK = 0.55, 0.4
     filled = sum(t >= tp[i] + CARRY for i in range(N))
     st = {"belt_off": v * t, "lit": {}, "filled": filled, "new": {}, "flash1": 0, "flash2": 0}
     flipped = passed = 0
