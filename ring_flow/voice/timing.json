@@ -1,138 +1,152 @@
 [
  {
-  "title": "Ring orientation cell",
-  "dur": 18.03,
+  "title": "Computer Vision for Ring Side Identification and Angular Orientation",
+  "dur": 26.976,
   "starts": [
    0.6,
    1.837,
-   7.744
+   9.898,
+   16.69
   ]
  },
  {
   "title": "A \u00b7 Setup: the hardware",
-  "dur": 40.483,
+  "dur": 51.659,
   "starts": [
    0.6,
-   2.527,
-   13.457,
-   19.804,
-   26.597,
-   34.954
+   2.484,
+   13.397,
+   19.805,
+   26.691,
+   34.579,
+   44.85
   ]
  },
  {
   "title": "A \u00b7 Setup: teaching the system",
-  "dur": 34.836,
+  "dur": 34.613,
   "starts": [
    0.6,
-   3.261,
-   9.458,
-   16.132,
-   25.573
+   3.157,
+   9.313,
+   15.997,
+   25.351
   ]
  },
  {
   "title": "B \u00b7 A ring arrives",
-  "dur": 34.343,
+  "dur": 34.578,
   "starts": [
    0.6,
-   5.898,
-   10.132,
-   16.529,
-   22.755
+   5.867,
+   10.108,
+   16.654,
+   22.99
   ]
  },
  {
   "title": "B \u00b7 Camera 1 takes the picture",
-  "dur": 25.748,
+  "dur": 25.419,
   "starts": [
    0.6,
-   3.263,
-   11.881,
-   16.997
+   3.241,
+   11.663,
+   16.668
   ]
  },
  {
   "title": "B \u00b7 The server checks the image",
-  "dur": 22.456,
+  "dur": 22.562,
   "starts": [
    0.6,
-   2.621,
-   10.294,
-   13.571,
-   19.593
+   2.533,
+   10.283,
+   13.636,
+   19.7
   ]
  },
  {
   "title": "B \u00b7 Signal 1 and the flip",
-  "dur": 28.815,
+  "dur": 28.959,
   "starts": [
    0.6,
-   6.364,
-   18.998
+   6.924,
+   19.142
   ]
  },
  {
   "title": "B \u00b7 Camera 2 takes the picture",
-  "dur": 21.962,
+  "dur": 30.573,
   "starts": [
    0.6,
-   9.484,
-   18.075
+   17.989,
+   26.686
   ]
  },
  {
   "title": "B \u00b7 Measuring the angle",
-  "dur": 35.485,
+  "dur": 29.996,
   "starts": [
    0.6,
-   2.522,
-   15.379,
-   27.545
+   2.504,
+   15.272,
+   22.056
   ]
  },
  {
   "title": "B \u00b7 Signal 2 and the robot",
-  "dur": 19.559,
+  "dur": 19.626,
   "starts": [
    0.6,
-   6.84,
-   12.408
+   6.824,
+   12.475
   ]
  },
  {
   "title": "C \u00b7 Running in the background",
-  "dur": 51.948,
+  "dur": 52.367,
   "starts": [
    0.6,
-   5.139,
-   13.691,
-   21.057,
-   30.628,
-   38.063,
-   43.219
+   5.278,
+   13.761,
+   21.026,
+   31.003,
+   38.487,
+   43.638
+  ]
+ },
+ {
+  "title": "B \u00b7 Ten rings in a row",
+  "dur": 29.702,
+  "starts": [
+   0.6,
+   6.107,
+   12.001,
+   18.156,
+   24.024
   ]
  },
  {
   "title": "D \u00b7 Why the GPU is needed",
-  "dur": 58.721,
+  "dur": 63.605,
   "starts": [
    0.6,
-   3.348,
-   15.07,
-   25.825,
-   41.447,
-   50.589
+   2.79,
+   16.152,
+   25.21,
+   36.321,
+   48.788,
+   56.561
   ]
  },
  {
   "title": "Who owns what",
-  "dur": 21.0,
+  "dur": 22.005,
   "starts": [
    0.6,
-   2.67,
-   9.895,
-   17.668
+   2.675,
+   10.726,
+   18.673
   ]
  }
 ]

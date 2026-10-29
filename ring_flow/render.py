@@ -167,7 +167,7 @@ def ring(d, cx, cy, r, ang, face, typ=3, sx=1.0, bg=BELT, photo=False, lit=0.0):
 BX0, BX1, BY0, BY1 = 20, 1010, 232, 312; BYC = 272
 CAM1, CAM2, FLIPX, SENS1, SENS2 = 300, 660, 480, 150, 562
 ROBOT = (930, 360)
-PINS = [(1075, 245), (1145, 245), (1215, 245), (1075, 305), (1145, 305), (1215, 305)]
+PINS = [(1063 + i * 44, 245) for i in range(5)] + [(1063 + i * 44, 305) for i in range(5)]
 LOGBOX = (900, 400, 1265, 700)
 
 WIRES = {
@@ -180,11 +180,11 @@ WIRES = {
     "plc_srv":  [(600, 480), (560, 480)],
     "plc_flip": [(620, 440), (620, 385), (FLIPX, 385), (FLIPX, 340)],
     "plc_robot": [(780, 480), (830, 480), (830, 360), (908, 360)],
-    "trig2":    [(760, 440), (760, 148), (690, 148)],
+    "trig2":    [(530, 214), (575, 214), (575, 148), (630, 148)],
     "sens2":    [(SENS2, 222), (SENS2, 200), (760, 200)],
     "power":    [(600, 645), (560, 645)],
 }
-ALL = {"belt", "cam1", "cam2", "lights1", "lights2", "sensor", "encoder", "switch", "server", "ups",
+ALL = {"flap", "belt", "cam1", "cam2", "lights1", "lights2", "sensor", "encoder", "switch", "server", "ups",
        "plc", "flip", "robot", "pins", "wires", "log"}
 
 def plen(pts): return sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(pts, pts[1:]))
@@ -228,7 +228,7 @@ def belt_draw(d, off):
         line(d, [(x, BY0 + 4), (x, BY1 - 4)], BELT_L, 2)
     for x in (BX0 + 6, BX1 - 6):
         rect(d, x - 7, BY0 - 4, x + 7, BY1 + 4, fill=(70, 78, 98), r=5)
-    text(d, BX0 + 80, BY1 + 14, "Conveyor  →", 12, FAINT, "lm", "m")
+    text(d, BX0 + 4, BY0 - 14, "Conveyor  →", 12, FAINT, "lm", "m")
 
 def plant(d, t, st):
     show = st.get("show", ALL); new = st.get("new", {}); lit = st.get("lit", {})
@@ -242,7 +242,7 @@ def plant(d, t, st):
             if k in ("plc_srv",) : continue
             if k == "sens2" and not st.get("sens2"): continue
             need = {"trig1": "sensor", "cam1": "cam1", "cam2": "cam2", "enc": "encoder", "sw_srv": "server",
-                    "srv_plc": "plc", "plc_flip": "flip", "plc_robot": "robot", "trig2": "plc", "power": "ups", "sens2": "plc"}
+                    "srv_plc": "plc", "plc_flip": "flip", "plc_robot": "robot", "trig2": "flip", "power": "ups", "sens2": "plc"}
             if need.get(k) not in show: continue
             col = lit.get(k, (50, 60, 82))
             if k == "sens2": dashed(d, psub(pts, wp), col, 2)
@@ -256,13 +256,20 @@ def plant(d, t, st):
         text(d, FLIPX, 190, "Flip mechanism", 14, c, "mm", "b")
         if st.get("flip_busy"):
             glow_box(d, FLIPX - 50, 206, FLIPX + 50, 340, GOLD, st["flip_busy"], 8)
+    if "flap" in show:
+        c = tcol or RED
+        rect(d, 376, 322, 428, 370, fill=mix(BG, c, .08), outline=mix(BG, c, .7), w=1.5, r=5)
+        text(d, 402, 382, "flap → reject", 10, c, "mm", "s")
+        a = math.radians(-st.get("flap", 0) * 75)
+        line(d, [(380, 228), (380 + 46 * math.cos(a), 228 - 46 * math.sin(a))], c, 5)
+        ell(d, 380, 228, 5, fill=c)
     if "pins" in show:
         c = tcol or BLUE
         rect(d, 1035, 205, 1255, 345, fill=(30, 36, 52), outline=mix(BG, c, .6), w=2, r=10)
         text(d, 1145, 190, "Pins (placing station)", 14, c, "mm", "b")
         for i, (x, y) in enumerate(PINS):
             ell(d, x, y, 5, fill=(150, 160, 180))
-            if i < st.get("filled", 3): ring(d, x, y, 24, 0, "rollover", bg=(30, 36, 52))
+            if i < st.get("filled", 3): ring(d, x, y, 18, 0, "rollover", bg=(30, 36, 52))
     if "plc" in show:
         c = tcol or ORANGE
         rect(d, 600, 440, 780, 520, fill=mix(BG, c, .1), outline=c, w=2.5, r=10)
@@ -331,10 +338,10 @@ def plant(d, t, st):
         if p: glow_box(d, 90, 470, 290, 540, CYAN, p)
     if "server" in show:
         rect(d, 340, 420, 560, 690, fill=(22, 30, 42), outline=GREEN, w=2.5, r=10)
-        text(d, 450, 440, "AI server", 16, GREEN, "mm", "b")
-        text(d, 450, 459, "cooled cabinet · V7AI software", 10.5, DIM, "mm", "m")
-        rows = [("Camera network card", CYAN, 474, 500), ("CPU · vision + signals", BLUE, 508, 540),
-                ("GPU · ML (if needed)", PURP, 548, 580), ("Storage · logs + images", DIM, 588, 614)]
+        text(d, 450, 440, "Server", 16, GREEN, "mm", "b")
+        text(d, 450, 459, "cooled cabinet · V7 AI Solutions software", 10.5, DIM, "mm", "m")
+        rows = [("Camera network card", CYAN, 474, 500), ("CPU · signals + control", BLUE, 508, 540),
+                ("GPU · runs the ML models", PURP, 548, 580), ("Storage · logs + images", DIM, 588, 614)]
         hl = st.get("srv_hl", {})
         for nm, c, y0, y1 in rows:
             key = nm.split(" ")[0]
@@ -369,7 +376,7 @@ def plant(d, t, st):
     # "Technocraft line" tag in setup scene
     text(d, 690, 534, "", 10, FAINT)
 
-def arm2(d, bx, by, ex, ey, col, l1=125, l2=125):
+def arm2(d, bx, by, ex, ey, col, l1=170, l2=170):
     dx, dy = ex - bx, ey - by
     dist = clamp(math.hypot(dx, dy), 20, l1 + l2 - 1)
     a = math.atan2(dy, dx)
@@ -394,12 +401,12 @@ LOG = [
     (4, lambda S: S[3] + 3.2, "08.431", "#1042 cam1 image in · 12 MP", BLUE),
     (5, lambda S: S[1] + 2.5, "08.702", "#1042 one complete ring  ✓", GREEN),
     (5, lambda S: S[2] + 1.8, "08.744", "#1042 type 3 · centred (41.3, 12.7)", TXT),
-    (5, lambda S: S[3] + 3.0, "08.851", "#1042 BURR up · conf 97.6 %", GOLD),
-    (5, lambda S: S[4] + 0.4, "08.853", "#1042 analysis done in 0.42 s", GREEN),
+    (5, lambda S: S[3] + 3.0, "08.851", "#1042 BURR up · confidence score ok", GOLD),
+    (5, lambda S: S[4] + 0.4, "08.853", "#1042 side check done (< 1 s)", GREEN),
     (6, lambda S: S[0] + 2.4, "08.860", "#1042 SIGNAL 1 → PLC: FLIP = YES", ORANGE),
     (6, lambda S: S[0] + 3.4, "08.871", "PLC ack · signal 1", FAINT),
     (6, lambda S: S[2] + 6.5, "10.410", "#1042 flip done (PLC)", GOLD),
-    (7, lambda S: S[0] + 2.2, "10.452", "#1042 cam2 trigger from PLC", ORANGE),
+    (7, lambda S: S[0] + 2.2, "10.452", "#1042 flip trigger + delay → cam2", ORANGE),
     (7, lambda S: S[1] + 3.0, "10.453", "#1042 cam2 diffuse strobe · shot", BLUE),
     (7, lambda S: S[2] + 2.0, "10.559", "#1042 cam2 image in · 12 MP", BLUE),
     (8, lambda S: S[1] + 2.0, "10.802", "#1042 3 notches found", GREEN),
@@ -411,7 +418,7 @@ LOG = [
     (9, lambda S: S[2] + 3.1, "13.112", "#1043 ID assigned · count 1043", TXT),
 ]
 
-def draw_log(d, si, t, S_all, box=LOGBOX, title="V7AI software · live log"):
+def draw_log(d, si, t, S_all, box=LOGBOX, title="V7 AI Solutions · live log", extra=()):
     x0, y0, x1, y1 = box
     rect(d, x0, y0, x1, y1, fill=(10, 14, 22), outline=(52, 64, 88), w=2, r=10)
     for i, c in enumerate((RED, YEL, GREEN)): ell(d, x0 + 16 + i * 14, y0 + 16, 4, fill=mix(BG, c, .7))
@@ -421,11 +428,13 @@ def draw_log(d, si, t, S_all, box=LOGBOX, title="V7AI software · live log"):
     for sc, f, clk, s, c in LOG:
         tt = f(S_all[sc])
         if sc < si or (sc == si and t >= tt): rows.append((clk, s, c, (t - tt) if sc == si else 99))
+    for tt, clk, s, c in extra:
+        if t >= tt: rows.append((clk, s, c, t - tt))
     n = int((y1 - y0 - 44) // 19)
     for k, (clk, s, c, age) in enumerate(rows[-n:]):
         y = y0 + 46 + k * 19
         if age < 0.6: rect(d, x0 + 6, y - 9, x1 - 6, y + 9, fill=mix((10, 14, 22), c, .25 * (1 - age / .6)), r=3)
-        text(d, x0 + 12, y, "10:42:" + clk, 11, FAINT, "lm", "mono")
+        text(d, x0 + 12, y, clk if ":" in clk else "10:42:" + clk, 11, FAINT, "lm", "mono")
         text(d, x0 + 110, y, s, 11.5, c, "lm", "mono")
     if int(t * 2) % 2 == 0:
         y = y0 + 46 + min(len(rows), n) * 19
@@ -473,20 +482,25 @@ def s_intro(d, t, D, S, si, SA):
         x = (i * 200 + t * 40) % 1400 - 70
         ring(d, x, belt_y + rnd.uniform(-14, 14), 34, rnd.uniform(0, 360), rnd.choice(["burr", "rollover"]), rnd.randint(1, 5))
     a = ev(t, 0.3, 1.0)
-    text(d, 640, 200, "Ring orientation cell", 58 * (0.9 + .1 * a), mix(BG, TXT, a), "mm", "b")
-    text(d, 640, 262, "How the setup works, and the journey of one ring through the line", 22, mix(BG, DIM, ev(t, 1.0, 1)), "mm", "r")
+    text(d, 640, 150, "Computer Vision for Ring Side Identification", 44 * (0.9 + .1 * a), mix(BG, TXT, a), "mm", "b")
+    text(d, 640, 205, "and Angular Orientation", 44 * (0.9 + .1 * a), mix(BG, TXT, a), "mm", "b")
+    text(d, 640, 262, "How the setup works, and the journey of a ring through the line", 21, mix(BG, DIM, ev(t, 1.0, 1)), "mm", "r")
     p = ev(t, S[1], .8)
     if p:
-        x = chip(d, 470, 330, "V7AI · vision software", GREEN, 15, "s")
+        x = chip(d, 420, 330, "V7 AI Solutions · vision software", GREEN, 15, "s")
         chip(d, x + 24, 330, "Technocraft · line & robot", ORANGE, 15, "s")
     p = ev(t, S[2], .8)
     if p:
-        legend(d, 520, 420)
-        text(d, 640, 455, "Every ring must leave rollover side up, at the right angle, on the pins", 15, mix(BG, TXT, p), "mm", "m")
+        rect(d, 300, 362, 980, 398, fill=mix(BG, YEL, .1 * p), outline=mix(BG, YEL, p), w=1.5, r=8)
+        text(d, 640, 380, "A complete theoretical estimation, visualised to better define the scope", 15, mix(BG, YEL, p), "mm", "s")
+    p = ev(t, S[3], .8)
+    if p:
+        legend(d, 520, 430)
+        text(d, 640, 462, "Every ring must leave rollover side up, at the right angle, on the pins", 15, mix(BG, TXT, p), "mm", "m")
 
 def s_hw(d, t, D, S, si, SA):
-    header(d, "A · Setup: the hardware", sub="Specified by V7AI · bought and wired by Technocraft")
-    show = {"belt", "flip", "pins", "plc", "robot"}
+    header(d, "A · Setup: the hardware", sub="Specified by V7 AI Solutions · procured by Technocraft")
+    show = {"belt", "flip", "pins", "plc", "robot", "flap"}
     new = {}
     seq = [(S[1] + 0.5, ["cam1", "cam2"]), (S[2] + 0.3, ["lights1"]), (S[2] + 3.3, ["lights2"]),
            (S[3] + 0.6, ["sensor"]), (S[3] + 3.5, ["encoder"]), (S[4] + 1.0, ["switch"]), (S[4] + 3.4, ["server"]),
@@ -503,23 +517,31 @@ def s_hw(d, t, D, S, si, SA):
         text(d, 480, 146, "light-tight shrouds", 12.5, mix(BG, BLUE, p), "mm", "s")
     if t >= S[2] + 1.0:
         p = ev(t, S[2] + 1.0)
-        chip(d, 300, 372, "low-angle ring light + diffuse", GOLD, 11.5, "s", anchor="m")
+        chip(d, 300, 400, "low-angle ring light + diffuse (optional)", GOLD, 11, "s", anchor="m")
     if t >= S[2] + 3.6:
-        chip(d, 660, 372, "diffuse light", (220, 225, 240), 11.5, "s", anchor="m")
+        chip(d, 660, 400, "diffuse light", (220, 225, 240), 11, "s", anchor="m")
     rect(d, 900, 400, 1265, 700, fill=PANEL, outline=LINE, w=2, r=12)
     text(d, 920, 420, "Hardware list", 16, TXT, "la", "b")
     items = [(S[1] + 0.5, "2 × 12 MP industrial cameras + lenses", BLUE), (S[1] + 1.5, "Isolated frames + light-tight shrouds", BLUE),
-             (S[2] + 0.3, "Ring light + diffuse lights, strobe ctrl", GOLD), (S[3] + 0.6, "Presence sensor", RED),
+             (S[2] + 0.3, "Ring light, diffuse (cam 1: optional), strobe", GOLD), (S[3] + 0.6, "Presence sensor", RED),
              (S[3] + 3.5, "Belt encoder (if the line has none)", CYAN), (S[4] + 1.0, "Industrial Ethernet switch + cabling", CYAN),
-             (S[4] + 3.4, "AI server in a cooled cabinet", GREEN), (S[4] + 5.6, "UPS", YEL)]
+             (S[4] + 3.4, "Server (CPU + GPU) in a cooled cabinet", GREEN), (S[4] + 5.6, "UPS", YEL),
+             (S[5] + 0.5, "ML training workstation + GPU card", PURP)]
     for i, (tt, s, c) in enumerate(items):
         if t >= tt:
-            y = 456 + i * 26
+            y = 452 + i * 24
             ell(d, 926, y, 4, fill=c); text(d, 940, y, s, 12.5, mix(BG, TXT, ev(t, tt, .4)), "lm", "m")
     if t >= S[5]:
         p = ev(t, S[5], .6)
+        card(d, 30, 560, 330, 700, "ML models: trained beforehand", col=mix(LINE, PURP, p), tcol=PURP, sz=14)
+        text(d, 46, 606, "ring images from Technocraft", 12, TXT, "lm", "m")
+        arrow(d, 46, 628, 70, 628, PURP, 2); text(d, 78, 628, "ML workstation + GPU card", 12, TXT, "lm", "s")
+        arrow(d, 46, 652, 70, 652, PURP, 2); text(d, 78, 652, "trained models", 12, TXT, "lm", "m")
+        arrow(d, 46, 676, 70, 676, PURP, 2); text(d, 78, 676, "loaded onto the server", 12, GREEN, "lm", "s")
+    if t >= S[6]:
+        p = ev(t, S[6], .6)
         rect(d, 912, 665, 1253, 690, fill=mix(PANEL, GREEN, .12 * p), outline=mix(PANEL, GREEN, p), w=1.5, r=6)
-        text(d, 1082, 677, "V7AI specifies · Technocraft buys + wires", 12, mix(PANEL, GREEN, p), "mm", "b")
+        text(d, 1082, 677, "Specified by V7 AI Solutions · procured by Technocraft", 10.5, mix(PANEL, GREEN, p), "mm", "b")
     text(d, 690, 548, "Technocraft line equipment shown in grey", 10.5, FAINT, "mm", "m")
 
 def s_sw(d, t, D, S, si, SA):
@@ -580,10 +602,10 @@ def s_sw(d, t, D, S, si, SA):
                       cx + 34 * math.cos(math.radians(140)), cy - 34 * math.sin(math.radians(140)), GREEN, 4, 12)
                 text(d, 260, 620, "Rotation direction", 15, TXT, "lm", "b")
                 chip(d, 262, 650, "Clockwise ✓", GREEN, 12, "s"); chip(d, 380, 650, "Anticlockwise", FAINT, 12, "m")
-                text(d, 262, 680, "agreed with Technocraft's robotics team", 11.5, DIM, "lm", "m")
+                text(d, 262, 680, "agreed with the Technocraft team", 11.5, DIM, "lm", "m")
         if i == 3:
             rect(d, 690, 470, 840, 530, fill=mix(BG, GREEN, .12), outline=GREEN, w=2, r=8)
-            text(d, 765, 500, "AI server", 15, GREEN, "mm", "b")
+            text(d, 765, 500, "Server", 15, GREEN, "mm", "b")
             rect(d, 1060, 470, 1210, 530, fill=mix(BG, ORANGE, .12), outline=ORANGE, w=2, r=8)
             text(d, 1135, 500, "Line controller", 15, ORANGE, "mm", "b")
             line(d, [(840, 500), (1060, 500)], (70, 80, 104), 3)
@@ -687,7 +709,7 @@ def s_cam1(d, t, D, S, si, SA):
             p = ev(t, S[1], .5)
             card(d, 40, 560, 400, 690, "Strobe flash", col=mix(LINE, YEL, p), tcol=YEL)
             text(d, 56, 612, "≈ 0.2 ms", 30, TXT, "lm", "b")
-            text(d, 56, 646, "ring light + diffuse light together", 12.5, DIM, "lm", "m")
+            text(d, 56, 646, "ring light (+ diffuse, optional)", 12.5, DIM, "lm", "m")
             text(d, 56, 668, "freezes the ring on a moving belt", 12.5, DIM, "lm", "m")
         if z > 0.3 and t > S[2]:
             p = ev(t, S[2], .5)
@@ -760,21 +782,19 @@ def s_check(d, t, D, S, si, SA):
         text(d, rx0 + 30, 468, "Which side is up?", 13.5, DIM, "lm", "m")
         if t > S[3] + 2.0:
             text(d, rx0 + 30, 500, "BURR SIDE UP", 24, GOLD, "lm", "b")
-            conf = 97.6 * ev(t, S[3] + 2.2, 1.4)
-            text(d, rx0 + 30, 534, "confidence", 12.5, DIM, "lm", "m")
-            text(d, 855, 534, f"{conf:.1f} %", 15, TXT, "rm", "monob")
+            conf = 0.9 * ev(t, S[3] + 2.2, 1.4)
+            text(d, rx0 + 30, 534, "confidence score", 12.5, DIM, "lm", "m")
+            chip(d, 855, 534, "example", FAINT, 10.5, "s", anchor="r")
             rect(d, rx0 + 30, 552, 855, 564, fill=(44, 52, 72), r=6)
-            rect(d, rx0 + 30, 552, rx0 + 30 + (855 - rx0 - 30) * conf / 100, 564, fill=GREEN, r=6)
-            x_th = rx0 + 30 + (855 - rx0 - 30) * 0.9
-            line(d, [(x_th, 546), (x_th, 570)], RED, 2)
-            text(d, x_th, 583, "min. 90 %", 10.5, RED, "mm", "s")
+            rect(d, rx0 + 30, 552, rx0 + 30 + (855 - rx0 - 30) * conf, 564, fill=GREEN, r=6)
+            text(d, rx0 + 30, 583, "high enough → decision is sent", 11, GREEN, "lm", "s")
     if t > S[4]:
         p = ev(t, S[4], .5)
         rect(d, rx0 + 14, 616, 871, 686, fill=mix(PANEL, GREEN, .15 * p), outline=GREEN, w=2, r=10)
         text(d, rx0 + 30, 651, "Total time", 14, DIM, "lm", "m")
-        text(d, 855, 651, "0.42 s  (< 1 s)", 22, GREEN, "rm", "b")
-    text(d, 265, 610, "Image processing on the server", 14, TXT, "mm", "s")
-    text(d, 265, 632, "OpenCV · CPU", 12, DIM, "mm", "m")
+        text(d, 855, 651, "under 1 s", 22, GREEN, "rm", "b")
+    text(d, 265, 610, "ML model on the server", 14, TXT, "mm", "s")
+    text(d, 265, 632, "trained beforehand on ring images from Technocraft", 12, DIM, "mm", "m")
     draw_log(d, si, t, SA, box=(900, 100, 1265, 700))
 
 def s_flip(d, t, D, S, si, SA):
@@ -788,6 +808,11 @@ def s_flip(d, t, D, S, si, SA):
     ang = -37.4 if fl < 0.5 else 37.4
     st = {"belt_off": x, "lit": {}, "flip_busy": (1 - abs(2 * fl - 1)) if 0 < fl < 1 else 0, "new": {}}
     ring_on_belt(st, x, ang=ang, face=face, sx=sx, idlabel="#1042")
+    if S[1] + 0.8 < t < S[2] + 0.3:
+        push = ev(t, S[1] + 5.0, 1.2)
+        st["flap"] = ev(t, S[1] + 4.6, .5) * (1 - ev(t, S[1] + 7.0, .6))
+        if push < 1:
+            ring_on_belt(st, 405, y=lerp(262, 346, push), ang=10, face="burr", idlabel="example" if push < .3 else None)
     if t > S[0] + 0.8:
         p = seg(t, S[0] + 0.8, S[0] + 2.4)
         if p < 1: st["lit"]["srv_plc"] = GREEN
@@ -801,38 +826,42 @@ def s_flip(d, t, D, S, si, SA):
         chip(d, 690, 560, "Burr up + confident → FLIP = YES", GREEN, 12.5, "s", anchor="m")
     if S[1] - 0.2 < t < S[2] + 0.3:
         p = ev(t, S[1] - 0.2, .5) * (1 - ev(t, S[2], .3))
-        x0, y0, x1, y1 = 80, 120, 860, 400
+        x0, y0, x1, y1 = 30, 420, 880, 700
         rect(d, x0, y0, x1, y1, fill=mix(BG, (40, 18, 22), p), outline=mix(BG, RED, p), w=2.5, r=14)
         if p > 0.5:
-            text(d, x0 + 24, y0 + 30, "⚠  Not confident? The system never guesses.", 20, RED, "lm", "b")
-            for k, (a, c) in enumerate((("low confidence  (e.g. 72 %)", GOLD), ("no ring in view", DIM), ("two rings in view", DIM))):
-                y = y0 + 80 + k * 32
+            text(d, x0 + 24, y0 + 30, "⚠  Side check not clear? The system never guesses.", 20, RED, "lm", "b")
+            for k, a in enumerate(("confidence score too low", "no ring in view", "two rings in view")):
+                y = y0 + 76 + k * 30
                 if t > S[1] + 0.8 + k * 0.9:
                     ell(d, x0 + 34, y, 4, fill=RED); text(d, x0 + 48, y, a, 15, TXT, "lm", "m")
             if t > S[1] + 4.5:
-                text(d, x0 + 24, y0 + 186, "Alert raised → ring handled as agreed:", 15, TXT, "lm", "s")
-                xx = x0 + 24
-                for k, (a, c) in enumerate((("divert", ORANGE), ("stop the line", RED), ("operator checks", CYAN))):
-                    if t > S[1] + 5.5 + k * 0.9: xx = chip(d, xx, y0 + 228, a, c, 14, "s") + 14
+                text(d, x0 + 24, y0 + 182, "Alert raised → a diverter flap pushes the ring", 15, TXT, "lm", "s")
+                text(d, x0 + 24, y0 + 206, "into a separate reject section", 15, TXT, "lm", "s")
+                chip(d, x0 + 24, y0 + 246, "example ring shown on the belt", FAINT, 12, "s")
     if t > S[2] + 0.2:
         y = 380
-        text(d, FLIPX, 368, "burr up → turned over", 12.5, GOLD, "mm", "s")
-        text(d, FLIPX, 386, "rollover up → passes straight through", 12, BLUE, "mm", "m")
+        text(d, FLIPX + 60, 352, "burr up → turned over", 12.5, GOLD, "lm", "s")
+        text(d, FLIPX + 60, 370, "rollover up → passes straight through", 12, BLUE, "lm", "m")
     draw_log(d, si, t, SA)
 
 def s_cam2(d, t, D, S, si, SA):
-    x = lerp(FLIPX + 50, CAM2, ev(t, S[0] + 0.2, 3.0))
+    x = lerp(FLIPX + 50, CAM2, ev(t, S[0] + 9.5, 4.0))
     z = cam_zoom(t, S[1] - 0.2, S[2] - 0.6, D, CAM2)
     flash = 0.0
     ft = S[1] + 3.0
     if ft <= t < ft + 0.7: flash = 1 - (t - ft) / 0.7
-    st = {"belt_off": x, "flash2": flash, "lit": {}, "sens2": t > S[0] + 4.0 and z < 0.5}
+    st = {"belt_off": x, "flash2": flash, "lit": {}}
     ring_on_belt(st, x + max(0, t - S[0] - 3.2) * 0.4, ang=37.4, face="rollover", lit=flash * .6, idlabel="#1042")
     header_step = 9 if t < S[1] else 10 if t < S[2] else 11
     full_plant(d, t, st)
-    if t > S[0] + 1.0: packet(d, WIRES["trig2"], seg(t, S[0] + 1.0, S[0] + 2.4), "TRIGGER", ORANGE)
-    if st["sens2"]:
-        chip(d, SENS2, 362, "or: a 2nd presence sensor", RED, 11, "s", anchor="m")
+    if t > S[0] + 6.0: packet(d, WIRES["trig2"], seg(t, S[0] + 6.0, S[0] + 9.0), "FLIP TRIGGER + DELAY", YEL)
+    if S[0] + 3.0 < t < S[1] - 0.2:
+        q = ev(t, S[0] + 9.5, 4.0)
+        card(d, 30, 560, 330, 700, "Camera 2 trigger", col=YEL, tcol=YEL, sz=14)
+        text(d, 46, 604, "not sent by the line controller", 12, RED, "lm", "s")
+        text(d, 46, 628, "start: flipper trigger", 12, TXT, "lm", "m")
+        text(d, 46, 652, "delay counted in encoder pulses", 12, TXT, "lm", "m")
+        text(d, 46, 676, f"{int(640 * q):,} / 640 pulses → capture", 12, CYAN, "lm", "monob")
     if z > 0.3 and t > S[1] + 3.0:
         rx = x + max(0, t - S[0] - 3.2) * 0.4
         pts = ring_pts(rx, 262, 28, 37.4, 3, 1, 1.0)
@@ -897,18 +926,12 @@ def s_angle(d, t, D, S, si, SA):
         p = ev(t, S[2], .5)
         rect(d, rx0 + 14, 350, 871, 560, fill=mix(PANEL, PURP, .1 * p), outline=mix(PANEL, PURP, p), w=2, r=10)
         text(d, rx0 + 30, 374, "How the notches are found", 14, PURP, "lm", "b")
-        hl = int((t - S[2]) / 1.4) % 2 if t < S[3] else -1
-        for k, (nm, sub) in enumerate((("ML model", "trained on real rings"), ("OpenCV", "classic image processing"))):
-            bx = rx0 + 30 + k * 172
-            c = PURP if hl == k else (120, 110, 160)
-            rect(d, bx, 396, bx + 158, 466, fill=mix(PANEL, c, .18 if hl == k else .06), outline=c, w=2, r=8)
-            text(d, bx + 79, 420, nm, 17, TXT if hl == k else DIM, "mm", "b")
-            text(d, bx + 79, 446, sub, 11, DIM, "mm", "m")
-        text(d, rx0 + 195, 431, "or", 11, DIM, "mm", "s")
-        if t > S[2] + 4.0:
-            rect(d, rx0 + 30, 486, 855, 540, fill=mix(PANEL, YEL, .1), outline=YEL, w=1.5, r=8)
-            text(d, (rx0 + 30 + 855) / 2, 506, "TO BE DECIDED AFTER TESTING", 15, YEL, "mm", "b")
-            text(d, (rx0 + 30 + 855) / 2, 527, "both methods trialled on real rings first", 11.5, DIM, "mm", "m")
+        rect(d, rx0 + 30, 396, 855, 466, fill=mix(PANEL, PURP, .16), outline=PURP, w=2, r=8)
+        text(d, (rx0 + 30 + 855) / 2, 420, "ML model", 19, TXT, "mm", "b")
+        text(d, (rx0 + 30 + 855) / 2, 446, "runs on the server's GPU", 11.5, DIM, "mm", "m")
+        if t > S[2] + 2.5:
+            text(d, rx0 + 30, 494, "trained beforehand on images of real rings", 13, TXT, "lm", "m")
+            text(d, rx0 + 30, 518, "received from Technocraft", 13, TXT, "lm", "m")
     if t > S[3]:
         p = ev(t, S[3], .5)
         rect(d, rx0 + 14, 576, 871, 686, fill=mix(PANEL, GREEN, .12 * p), outline=mix(PANEL, GREEN, p), w=2, r=10)
@@ -919,8 +942,8 @@ def s_angle(d, t, D, S, si, SA):
         arrow(d, x + 6, 640, x + 30, 640, DIM, 2)
         x = chip(d, x + 36, 640, "camera 2", BLUE, 12.5, "s")
         tick(d, 856, 640, 16)
-    text(d, 265, 610, "Notch finding: ML model or OpenCV", 14, TXT, "mm", "s")
-    text(d, 265, 632, "decided after testing", 12, YEL, "mm", "m")
+    text(d, 265, 610, "Notch finding: ML model", 14, TXT, "mm", "s")
+    text(d, 265, 632, "trained beforehand on ring images from Technocraft", 12, DIM, "mm", "m")
     draw_log(d, si, t, SA, box=(900, 100, 1265, 700))
 
 def s_robot(d, t, D, S, si, SA):
@@ -951,7 +974,7 @@ def s_robot(d, t, D, S, si, SA):
     header(d, "B · Signal 2 and the robot", step=13 if t < S[1] else 14)
     full_plant(d, t, st)
     if not placed:
-        ring(d, rpos[0], rpos[1], 26 if t < t3 else lerp(26, 24, ev(t, t3, t4 - t3)), ang, "rollover", bg=BELT)
+        ring(d, rpos[0], rpos[1], 26 if t < t3 else lerp(26, 18, ev(t, t3, t4 - t3)), ang, "rollover", bg=BELT)
         chip(d, rpos[0], rpos[1] + 44, "#1042", TXT, 10.5, "monob", fill=(30, 36, 52), anchor="m")
         bx, by = ROBOT; arm2(d, bx, by, arm[0], arm[1], BLUE)
     if t > S[0] + 0.5:
@@ -974,7 +997,7 @@ def s_robot(d, t, D, S, si, SA):
 CONF = [97.5 - 0.004 * i + random.Random(i).uniform(-0.5, 0.5) - (0.01 * max(0, i - 120) ** 1.45) for i in range(200)]
 
 def s_bg(d, t, D, S, si, SA):
-    header(d, "C · Running in the background", sub="V7AI software on the AI server · 24/7")
+    header(d, "C · Running in the background", sub="V7 AI Solutions software on the server · 24/7")
     tiles = [(20, 96, 430, 396), (440, 96, 850, 396), (860, 96, 1270, 396),
              (20, 408, 430, 708), (440, 408, 850, 708), (860, 408, 1270, 708)]
     names = [("Logging & traceability", BLUE), ("Missed-ring check", RED), ("Confidence watch", GOLD),
@@ -987,17 +1010,17 @@ def s_bg(d, t, D, S, si, SA):
         p = ev(lt, 0, .6)
         card(d, x0, y0, x1, y1, nm, col=mix(LINE, c, .35 + .65 * p * (1 if i == min(5, sum(t >= s - .3 for s in S[1:]) - 1) else .4)), tcol=c)
         if i == 0:
-            rows = ["#1040  img1 img2  BURR  98.1%  flip  52.0°",
-                    "#1041  img1 img2  ROLL  99.0%  pass  22.1°",
-                    "#1042  img1 img2  BURR  97.6%  flip  37.4°",
-                    "#1043  img1 img2  ROLL  98.4%  pass  11.8°",
-                    "#1044  img1 img2  BURR  96.9%  flip  64.3°",
-                    "#1045  img1 img2  ROLL  98.8%  pass   5.6°"]
+            rows = ["#1040  img1 img2  BURR  score  flip  52.0°",
+                    "#1041  img1 img2  ROLL  score  pass  22.1°",
+                    "#1042  img1 img2  BURR  score  flip  37.4°",
+                    "#1043  img1 img2  ROLL  score  pass  11.8°",
+                    "#1044  img1 img2  BURR  score  flip  64.3°",
+                    "#1045  img1 img2  ROLL  score  pass   5.6°"]
             n = min(len(rows), 3 + int(lt / 1.2))
-            text(d, x0 + 16, y0 + 50, "ID     images     side  conf.  flip  angle", 10.5, FAINT, "lm", "mono")
+            text(d, x0 + 16, y0 + 50, "ID     images     side  conf.  flip  angle   (example)", 10.5, FAINT, "lm", "mono")
             for k, s in enumerate(rows[:n]):
                 text(d, x0 + 16, y0 + 74 + k * 24, s, 10.5, TXT if k != 2 else GOLD, "lm", "mono")
-            text(d, x0 + 16, y1 - 22, "every image, decision, score + signal, by ring ID", 11, DIM, "lm", "m")
+            text(d, x0 + 16, y1 - 22, "every image, decision, confidence score + signal, by ring ID", 11, DIM, "lm", "m")
         if i == 1:
             sc = 1042 + int(lt / 1.5); pr = sc if lt < 6 else sc - 1
             text(d, x0 + 20, y0 + 70, "Presence sensor count", 13, DIM, "lm", "m"); text(d, x1 - 20, y0 + 70, f"{sc:,}", 22, TXT, "rm", "monob")
@@ -1012,7 +1035,6 @@ def s_bg(d, t, D, S, si, SA):
             gx0, gx1, gy0, gy1 = x0 + 46, x1 - 20, y0 + 50, y1 - 50
             def gy(v): return lerp(gy1, gy0, (v - 85) / 15)
             for v in (90, 95, 100):
-                text(d, gx0 - 8, gy(v), f"{v}", 10, FAINT, "rm", "mono")
                 line(d, [(gx0, gy(v)), (gx1, gy(v))], (40, 48, 66), 1)
             line(d, [(gx0, gy(92)), (gx1, gy(92))], RED, 1.5)
             text(d, gx1, gy(92) + 10, "alarm level", 10, RED, "rm", "s")
@@ -1022,7 +1044,7 @@ def s_bg(d, t, D, S, si, SA):
                 rect(d, x0 + 16, y1 - 40, x1 - 16, y1 - 12, fill=mix(PANEL, RED, .2), outline=RED, w=1.5, r=6)
                 text(d, (x0 + x1) / 2, y1 - 26, "⚠ confidence drifting: check light / rust", 12, RED, "mm", "b")
             else:
-                text(d, x0 + 16, y1 - 22, "average confidence per hour (%)", 11, DIM, "lm", "m")
+                text(d, x0 + 16, y1 - 22, "confidence score trend (example)", 11, DIM, "lm", "m")
         if i == 3:
             ax, bx_, y = x0 + 90, x1 - 90, y0 + 120
             drop = lt > 5.0
@@ -1048,11 +1070,11 @@ def s_bg(d, t, D, S, si, SA):
             alert = lt > 3.0
             chip(d, sx0 + 12, sy0 + 20, "● RUNNING" if not alert else "● ATTENTION", GREEN if not alert else GOLD, 11, "b")
             text(d, sx1 - 12, sy0 + 20, "rings today 1,042", 10.5, DIM, "rm", "mono")
-            text(d, sx0 + 12, sy0 + 50, "cycle 6.0 s · reject 0.3 % · conf 97.6 %", 10.5, TXT, "lm", "mono")
+            text(d, sx0 + 12, sy0 + 50, "cycle 6.0 s · all checks running", 10.5, TXT, "lm", "mono")
             if alert:
                 rect(d, sx0 + 10, sy0 + 68, sx1 - 10, sy1 - 10, fill=mix(BG, GOLD, .12), outline=GOLD, w=1.2, r=4)
-                text(d, sx0 + 20, sy0 + 84, "Low confidence on #1051, diverted", 11, GOLD, "lm", "s")
-                for k, s in enumerate(("1. Check ring in divert bin", "2. Wipe Camera 1 window", "3. Press RESUME")):
+                text(d, sx0 + 20, sy0 + 84, "Low confidence score on #1051, diverted", 11, GOLD, "lm", "s")
+                for k, s in enumerate(("1. Check ring in reject section", "2. Wipe Camera 1 window", "3. Press RESUME")):
                     text(d, sx0 + 20, sy0 + 106 + k * 18, s, 10.5, TXT, "lm", "m")
         if i == 5:
             cyc = (lt % 5.0) / 5.0
@@ -1063,18 +1085,107 @@ def s_bg(d, t, D, S, si, SA):
             line(d, pts, YEL, 2)
             ph = lerp(gx0, gx1, cyc); line(d, [(ph, gy - 14), (ph, gy + 30)], TXT, 1)
             rect(d, x0 + 20, y0 + 130, x0 + 190, y0 + 190, fill=mix(PANEL, GREEN, .15), outline=GREEN, w=1.5, r=8)
-            text(d, x0 + 105, y0 + 152, "AI server", 13, GREEN, "mm", "b"); text(d, x0 + 105, y0 + 172, "still running", 11, TXT, "mm", "m")
+            text(d, x0 + 105, y0 + 152, "Server", 13, GREEN, "mm", "b"); text(d, x0 + 105, y0 + 172, "still running", 11, TXT, "mm", "m")
             rect(d, x0 + 210, y0 + 130, x1 - 20, y0 + 190, fill=mix(PANEL, YEL, .15 if dip else .05), outline=YEL, w=1.5, r=8)
             text(d, (x0 + 210 + x1 - 20) / 2, y0 + 152, "UPS", 13, YEL, "mm", "b")
             text(d, (x0 + 210 + x1 - 20) / 2, y0 + 172, "on battery" if dip else "standby", 11, TXT, "mm", "m")
             text(d, x0 + 16, y1 - 22, "after a fault or power dip: restarts on its own", 11, DIM, "lm", "m")
 
+MULTI_FACES = ["burr", "rollover", "burr", "burr", "rollover", "burr", "rollover", "rollover", "burr", "rollover"]
+MULTI_ANG = [random.Random(50 + k).uniform(-60, 60) for k in range(10)]
+
+def clock(tt):
+    sec = 42 * 60 + 13.112 + tt * 4
+    return f"10:{int(sec // 60):02d}:{sec % 60:06.3f}"
+
+def s_multi(d, t, D, S, si, SA):
+    header(d, "B · Ten rings in a row", sub="Detect · check side · flip if needed · measure angle · place")
+    N, PICK, t0 = 10, 870.0, 1.0
+    gap = clamp((D - 4.25) / 16.5, 1.35, 2.0); v = 120.0 / gap
+    def xr(i, tt): return -30 + v * (tt - t0 - i * gap)
+    def tat(i, x): return t0 + i * gap + (x + 30) / v
+    tp = [tat(i, PICK) for i in range(N)]
+    CARRY, BACK = 0.75, 0.6
+    filled = sum(t >= tp[i] + CARRY for i in range(N))
+    st = {"belt_off": v * t, "lit": {}, "filled": filled, "new": {}, "flash1": 0, "flash2": 0}
+    flipped = passed = 0
+    carry = None
+    for i in range(N):
+        x = xr(i, t)
+        if x < -40 or t >= tp[i] + CARRY: continue
+        burr = MULTI_FACES[i] == "burr"
+        if t >= tp[i]:
+            carry = i; continue
+        face, sx, ang = MULTI_FACES[i], 1.0, MULTI_ANG[i]
+        if burr:
+            fl = clamp((x - (FLIPX - 25)) / 50)
+            if fl >= 0.5: face, ang = "rollover", -MULTI_ANG[i]
+            sx = math.cos(math.pi * fl) if fl < 0.5 else -math.cos(math.pi * fl)
+            if 0 < fl < 1: st["flip_busy"] = 1 - abs(2 * fl - 1)
+        st["flash1"] = max(st["flash1"], clamp(1 - abs(x - CAM1) / 10))
+        st["flash2"] = max(st["flash2"], clamp(1 - abs(x - CAM2) / 10))
+        if abs(x - SENS1) < 26: st["beam"] = True
+        ring_on_belt(st, x, ang=ang, face=face, sx=sx, lit=max(clamp(1 - abs(x - CAM1) / 10), clamp(1 - abs(x - CAM2) / 10)) * .6,
+                     idlabel=f"#{1044 + i}" if x > SENS1 else None)
+    for i in range(N):
+        if xr(i, t) > FLIPX + 25 or t >= tp[i]:
+            if MULTI_FACES[i] == "burr": flipped += 1
+            else: passed += 1
+    # robot arm
+    rest = (930, 250)
+    arm = rest
+    if t < tp[0]: arm = (lerp(rest[0], PICK, ev(t, tp[0] - 1.2, 1.0)), lerp(rest[1], 262, ev(t, tp[0] - 1.2, 1.0)))
+    for i in range(N):
+        sl = PINS[i]
+        if tp[i] <= t < tp[i] + CARRY:
+            p = ev(t, tp[i], CARRY); arm = (lerp(PICK, sl[0], p), lerp(262, sl[1], p))
+        elif tp[i] + CARRY <= t < tp[i] + CARRY + BACK:
+            p = ev(t, tp[i] + CARRY, BACK)
+            tgt = (PICK, 262) if i < N - 1 else rest
+            arm = (lerp(sl[0], tgt[0], p), lerp(sl[1], tgt[1], p))
+        elif i < N - 1 and tp[i] + CARRY + BACK <= t < tp[i + 1]: arm = (PICK, 262)
+    if t >= tp[-1] + CARRY + BACK: arm = rest
+    st["arm"] = arm
+    full_plant(d, t, st)
+    if carry is not None:
+        p = ev(t, tp[carry], CARRY)
+        a0 = -MULTI_ANG[carry] if MULTI_FACES[carry] == "burr" else MULTI_ANG[carry]
+        ring(d, arm[0], arm[1], lerp(26, 18, p), lerp(a0, 0, p), "rollover")
+        arm2(d, ROBOT[0], ROBOT[1], arm[0], arm[1], BLUE)
+    # data packets for each ring
+    for i in range(N):
+        tc1, tc2 = tat(i, CAM1), tat(i, CAM2)
+        packet(d, WIRES["cam1"], (t - tc1) / 0.6, "IMG", BLUE)
+        packet(d, WIRES["srv_plc"], (t - tc1 - 0.7) / 0.5, "FLIP" if MULTI_FACES[i] == "burr" else "PASS", GREEN)
+        packet(d, WIRES["cam2"], (t - tc2) / 0.7, "IMG", BLUE)
+        packet(d, WIRES["plc_robot"], (t - tc2 - 0.8) / 0.5, "ANGLE", ORANGE)
+    rect(d, 30, 560, 330, 700, fill=PANEL, outline=GREEN, w=2, r=10)
+    text(d, 48, 584, "Run counter", 14, GREEN, "lm", "b")
+    for k, (a, b, c) in enumerate((("Placed in slots", f"{filled} / 10", GREEN), ("Flipped (burr up)", str(flipped), GOLD),
+                                   ("Passed straight (rollover up)", str(passed), BLUE))):
+        y = 616 + k * 26
+        text(d, 48, y, a, 12.5, DIM, "lm", "m"); text(d, 314, y, b, 15, c, "rm", "monob")
+    if filled == N:
+        p = ev(t, tp[-1] + CARRY, .6)
+        rect(d, 1035, 352, 1255, 384, fill=mix(BG, GREEN, .2 * p), outline=mix(BG, GREEN, p), w=1.5, r=8)
+        text(d, 1145, 368, "10 / 10 rollover up · aligned", 12, mix(BG, GREEN, p), "mm", "b")
+    extra = []
+    for i in range(N):
+        rid = f"#{1044 + i}"; burr = MULTI_FACES[i] == "burr"
+        ang = MULTI_ANG[i] if burr else -MULTI_ANG[i]
+        rot = (-ang) % 90 if False else abs(MULTI_ANG[i])
+        tt = tat(i, SENS1); extra.append((tt, clock(tt), f"{rid} sensor triggered · ID", RED))
+        tt = tat(i, CAM1) + 0.7; extra.append((tt, clock(tt), f"{rid} {'BURR up → flip' if burr else 'ROLL up → pass'}", GOLD if burr else BLUE))
+        tt = tat(i, CAM2) + 0.6; extra.append((tt, clock(tt), f"{rid} rotate {rot:.1f}°", GREEN))
+        tt = tp[i] + CARRY; extra.append((tt, clock(tt), f"{rid} placed in slot {i + 1}  ✓", GREEN))
+    extra.sort(key=lambda r: r[0])
+    draw_log(d, si, t, SA, extra=extra)
+
 def s_gpu(d, t, D, S, si, SA):
-    header(d, "D · Why the GPU is needed", sub="For ML models, if testing picks them")
-    # server with CPU + GPU (left)
+    header(d, "D · Why the GPU is needed", sub="Training and running the ML models")
     x0, y0, x1, y1 = 30, 100, 430, 420
-    card(d, x0, y0, x1, y1, "AI server", col=GREEN, tcol=GREEN)
-    gpu_on = t > S[2] + 2.0
+    card(d, x0, y0, x1, y1, "GPU vs CPU", col=GREEN, tcol=GREEN)
+    gpu_on = t > S[3]
     rect(d, 50, 150, 410, 250, fill=mix(PANEL, BLUE, .12), outline=BLUE, w=2, r=8)
     text(d, 66, 170, "CPU", 18, BLUE, "lm", "b")
     text(d, 66, 196, "a few powerful cores, one job after another", 11.5, DIM, "lm", "m")
@@ -1087,14 +1198,12 @@ def s_gpu(d, t, D, S, si, SA):
     for i in range(40):
         for j in range(6):
             on = gpu_on and (math.sin(t * 6 + i * .5 + j) > -0.2)
-            c = mix(PANEL, PURP, .9 if on else .25)
-            rect(d, 66 + i * 8.4, 328 + j * 11, 72 + i * 8.4, 336 + j * 11, fill=c)
-    # S1 real rings vary
+            rect(d, 66 + i * 8.4, 328 + j * 11, 72 + i * 8.4, 336 + j * 11, fill=mix(PANEL, PURP, .9 if on else .25))
     if t > S[1]:
         rx0, ry0 = 460, 100
-        card(d, rx0, ry0, 1250, 270, "Real rings aren't perfect", col=mix(LINE, GOLD, ev(t, S[1], .5)), tcol=GOLD)
-        variants = [("clean", None, 0), ("rust", (140, 66, 28), .45), ("oil", (40, 40, 50), .35), ("scratches", None, 0), ("light changes", (255, 255, 255), .3)]
-        for k, (nm, tint, amt) in enumerate(variants):
+        card(d, rx0, ry0, 1250, 270, "Real rings aren't perfect → an ML model copes better than fixed rules", col=mix(LINE, GOLD, ev(t, S[1], .5)), tcol=GOLD)
+        variants = [("clean", 0), ("rust", 1), ("oil", 2), ("scratches", 3), ("light changes", 4)]
+        for k, (nm, _) in enumerate(variants):
             if t < S[1] + 2.5 + k * 0.7: continue
             cx = rx0 + 90 + k * 150; cy = 192
             rect(d, cx - 55, cy - 55, cx + 55, cy + 55, fill=(36, 38, 44), r=6)
@@ -1104,69 +1213,65 @@ def s_gpu(d, t, D, S, si, SA):
                 for _ in range(26):
                     a = rnd.uniform(0, 6.28); rr = rnd.uniform(24, 40)
                     ell(d, cx + math.cos(a) * rr, cy + math.sin(a) * rr, rnd.uniform(2, 5), fill=(150, 70, 30))
-            if nm == "oil":
-                ell(d, cx + 10, cy - 12, 22, 12, fill=(52, 46, 46))
+            if nm == "oil": ell(d, cx + 10, cy - 12, 22, 12, fill=(52, 46, 46))
             if nm == "scratches":
                 for _ in range(5):
                     a = rnd.uniform(0, 6.28); line(d, [(cx + math.cos(a) * 40, cy + math.sin(a) * 40), (cx + math.cos(a + 1.2) * 30, cy + math.sin(a + 1.2) * 30)], (220, 220, 210), 1.2)
-            if nm == "light changes":
-                ell(d, cx - 18, cy - 18, 20, fill=(240, 236, 220))
+            if nm == "light changes": ell(d, cx - 18, cy - 18, 20, fill=(240, 236, 220))
             text(d, cx, cy + 68, nm, 12, TXT, "mm", "s")
     if t > S[2]:
         p = ev(t, S[2], .5)
-        card(d, 460, 282, 1250, 420, "If testing picks a trained ML model…", col=mix(LINE, PURP, p), tcol=PURP)
-        x = 480
-        for k, s in enumerate(("Camera 1 · side check", "Camera 2 · notch finding")):
-            if t > S[2] + 1.5 + k * 1.5: x = chip(d, x, 345, s, BLUE, 14, "s") + 20
-        if t > S[2] + 5.0:
-            arrow(d, x, 345, x + 50, 345, PURP, 3)
-            chip(d, x + 60, 345, "runs on the GPU", PURP, 15, "b")
-        text(d, 480, 390, "if OpenCV wins the trials instead, both checks simply run on the CPU", 11.5, DIM, "lm", "m")
+        card(d, 460, 282, 1250, 420, "Trained beforehand", col=mix(LINE, PURP, p), tcol=PURP)
+        steps = [("Ring images", "from Technocraft", GOLD), ("ML workstation", "with a GPU card", PURP),
+                 ("Trained models", "side check + notches", GREEN), ("Server", "on the line", GREEN)]
+        for k, (a, b, c) in enumerate(steps):
+            if t < S[2] + 1.0 + k * 1.3: continue
+            bx = 480 + k * 192
+            rect(d, bx, 330, bx + 160, 396, fill=mix(PANEL, c, .14), outline=c, w=2, r=8)
+            text(d, bx + 80, 354, a, 14, TXT, "mm", "b"); text(d, bx + 80, 376, b, 11, DIM, "mm", "m")
+            if k: arrow(d, bx - 30, 363, bx - 4, 363, c, 2.5)
     if t > S[3]:
         p = ev(t, S[3], .5)
-        card(d, 30, 432, 700, 640, "Each image, inside the 6 s cycle", col=mix(LINE, PURP, p), tcol=TXT)
-        # budget bars (illustrative)
-        rows = [("ML model on CPU only", BLUE, 0.62, 0.22, "slow, and varies with load"),
-                ("ML model on the GPU", PURP, 0.07, 0.01, "fast, and the same every time")]
-        for k, (nm, c, base, jit, note) in enumerate(rows):
-            y = 486 + k * 66
-            text(d, 50, y, nm, 14, TXT, "lm", "s")
-            text(d, 680, y, note, 12, c, "rm", "m")
-            bx0, bx1 = 50, 680
-            rect(d, bx0, y + 18, bx1, y + 42, fill=(36, 44, 62), r=5)
-            ln = base + jit * (0.5 + 0.5 * math.sin(t * (3 + k * 5))) if t > S[3] + 1.0 else 0
-            rect(d, bx0, y + 18, bx0 + (bx1 - bx0) * ln * ev(t, S[3] + 1.0, 1.0), y + 42, fill=c, r=5)
-        text(d, 50, 620, "bar = share of the time available per ring (illustrative)", 10.5, FAINT, "lm", "m")
-        text(d, 680, 620, "CPU stays free for cameras, signals, logging", 11.5, BLUE, "rm", "s")
-    if t > S[4]:
-        p = ev(t, S[4], .5)
-        card(d, 712, 432, 1250, 640, "Retrain on site", col=mix(LINE, GREEN, p), tcol=GREEN)
+        card(d, 30, 432, 700, 640, "Why a GPU: training and running the models", col=mix(LINE, PURP, p), tcol=TXT)
+        rows = [("Training on a CPU only", BLUE, 0.92, "very slow", S[3] + 1.5),
+                ("Training on a GPU", PURP, 0.16, "much faster", S[3] + 3.0)]
+        for k, (nm, c, ln, note, ts) in enumerate(rows):
+            y = 486 + k * 58
+            text(d, 50, y, nm, 14, TXT, "lm", "s"); text(d, 680, y, note, 12, c, "rm", "m")
+            rect(d, 50, y + 16, 680, y + 38, fill=(36, 44, 62), r=5)
+            if t > ts: rect(d, 50, y + 16, 50 + 630 * ln * ev(t, ts, 1.2), y + 38, fill=c, r=5)
+        if t > S[4]:
+            text(d, 50, 600, "On the line: the server's GPU runs the models, fast + steady per image;", 12, PURP, "lm", "s")
+            text(d, 50, 620, "the CPU stays free for cameras, signals and logging", 12, BLUE, "lm", "s")
+        else:
+            text(d, 50, 612, "time to train (illustrative)", 10.5, FAINT, "lm", "m")
+    if t > S[5]:
+        p = ev(t, S[5], .5)
+        card(d, 712, 432, 1250, 640, "New ring type?", col=mix(LINE, GREEN, p), tcol=GREEN)
         cx, cy, R = 980, 540, 66
-        steps = ["new ring type /\nconditions change", "collect images", "retrain on the GPU", "deploy, back\nto production"]
-        for k, s in enumerate(steps):
+        steps = ["new ring type", "Technocraft sends\nnew images", "retrain the model", "update the\nserver"]
+        for k, s_ in enumerate(steps):
             a = math.radians(90 - k * 90)
-            px, py = cx + math.cos(a) * R * 1.55, cy - math.sin(a) * R * 0.95
-            on = t > S[4] + 0.6 + k * 0.8
-            for j, ln in enumerate(s.split("\n")):
-                text(d, px, py + j * 15 - (len(s.split("\n")) - 1) * 7, ln, 11.5, TXT if on else FAINT, "mm", "s")
+            px, py = cx + math.cos(a) * R * 1.75, cy - math.sin(a) * R * 0.95
+            on = t > S[5] + 0.6 + k * 0.8
+            for jj, ln in enumerate(s_.split("\n")):
+                text(d, px, py + jj * 15 - (len(s_.split("\n")) - 1) * 7, ln, 11.5, TXT if on else FAINT, "mm", "s")
         ang = (t * 70) % 360
         arc(d, cx, cy, 34, ang, ang + 270, GREEN, 3)
-        text(d, cx, cy, "on site", 11, GREEN, "mm", "b")
-        text(d, 1236, 452, "nothing leaves the factory", 11.5, DIM, "rm", "m")
-    if t > S[5]:
-        p = ev(t, S[5], .6)
+    if t > S[6]:
+        p = ev(t, S[6], .6)
         rect(d, 160, 654, 1120, 704, fill=mix(BG, PURP, .3 * p), outline=mix(BG, PURP, p), w=2.5, r=12)
-        text(d, 640, 679, "Headroom to use whichever method works best, without slowing the line", 17, mix(BG, TXT, p), "mm", "b")
+        text(d, 640, 679, "The GPU makes accurate, reliable ML possible, without slowing the line", 17, mix(BG, TXT, p), "mm", "b")
 
 def s_own(d, t, D, S, si, SA):
     header(d, "Who owns what")
-    cols = [(40, 630, "V7AI", "Vision software", GREEN, S[1],
-             ["Calibration + ring-type setup", "Sensor event → ring ID + count", "Camera 1: one ring, type, side",
-              "Signal 1: flip yes / no", "Camera 2: notch angle (ML / OpenCV)", "Signal 2: rotation angle",
+    cols = [(40, 630, "V7 AI Solutions", "Vision software", GREEN, S[1],
+             ["Ring-type setup + ML model training", "Sensor event → ring ID + count", "Camera 1: one ring, type, side",
+              "Signal 1: flip yes / no", "Camera 2: notch angle (ML)", "Signal 2: rotation angle",
               "Logging, monitoring, operator screen"]),
             (650, 1240, "Technocraft", "Line, robot + hardware", ORANGE, S[2],
              ["Conveyor", "Flip mechanism", "Robot, gripper + robot program", "Line controller (PLC) program",
-              "Pins", "Buys all hardware", "Electrical work + installation"])]
+              "Pins", "Procures all hardware", "Ring images for ML training"])]
     for x0, x1, nm, sub, c, st, items in cols:
         if t < st - 0.3:
             rect(d, x0, 110, x1, 600, outline=(32, 40, 58), w=1.5, r=14); continue
@@ -1180,9 +1285,9 @@ def s_own(d, t, D, S, si, SA):
     if t > S[3]:
         p = ev(t, S[3], .8)
         text(d, 640, 650, "Thanks for watching", 30, mix(BG, TXT, p), "mm", "b")
-        text(d, 640, 688, "V7AI × Technocraft · ring orientation cell", 14, mix(BG, DIM, p), "mm", "m")
+        text(d, 640, 688, "V7 AI Solutions × Technocraft · ring orientation cell", 14, mix(BG, DIM, p), "mm", "m")
 
-SCENES = [s_intro, s_hw, s_sw, s_arrive, s_cam1, s_check, s_flip, s_cam2, s_angle, s_robot, s_bg, s_gpu, s_own]
+SCENES = [s_intro, s_hw, s_sw, s_arrive, s_cam1, s_check, s_flip, s_cam2, s_angle, s_robot, s_bg, s_multi, s_gpu, s_own]
 
 # ------------------------------------------------------------------ render
 def load_timing():
