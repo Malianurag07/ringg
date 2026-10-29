@@ -411,7 +411,7 @@ LOG = [
     (7, lambda S: S[2] + 2.8, "10.559", "#1042 cam2 image in · 12 MP", BLUE),
     (8, lambda S: S[1] + 2.0, "10.802", "#1042 3 slots found", GREEN),
     (8, lambda S: S[1] + 6.5, "10.871", "#1042 rotate 37.4° CW (0–89°)", GREEN),
-    (8, lambda S: S[3] + 2.5, "10.872", "#1042 matched to sensor ID  ✓", GREEN),
+    (8, lambda S: S[3] + 2.5, "10.872", "#1042 recorded against ID  ✓", GREEN),
     (9, lambda S: S[0] + 2.0, "10.880", "#1042 SIGNAL 2 → robot: 37.4°", ORANGE),
     (9, lambda S: S[1] + 4.6, "12.950", "#1042 placed on pins  ✓", GREEN),
     (9, lambda S: S[2] + 3.0, "13.112", "#1043 sensor triggered", RED),
@@ -934,7 +934,7 @@ def s_angle(d, t, D, S, si, SA):
     if t > S[3]:
         p = ev(t, S[3], .5)
         rect(d, rx0 + 14, 576, 871, 686, fill=mix(PANEL, GREEN, .12 * p), outline=mix(PANEL, GREEN, p), w=2, r=10)
-        text(d, rx0 + 30, 600, "Matched to ring ID #1042", 14, GREEN, "lm", "b")
+        text(d, rx0 + 30, 600, "Recorded against ring ID #1042", 14, GREEN, "lm", "b")
         x = chip(d, rx0 + 30, 640, "sensor", RED, 12.5, "s")
         arrow(d, x + 6, 640, x + 30, 640, DIM, 2)
         x = chip(d, x + 36, 640, "camera 1", BLUE, 12.5, "s")
@@ -993,8 +993,9 @@ def s_robot(d, t, D, S, si, SA):
         packet(d, WIRES["trig1"], seg(t, S[2] + 3.0, S[2] + 4.2), "PULSE", YEL)
     draw_log(d, si, t, SA)
 
-DIP = range(150, 156)   # one short, sudden dip, then back to normal
-CONF = [97.2 + random.Random(i).uniform(-0.5, 0.5) - (7.5 if i in DIP else 0) for i in range(200)]
+DIP = range(55, 60)     # sudden dip: one bad ring, then straight back to normal
+DRIFT = 110             # gradual drift: the mechanical system slowly performs worse
+CONF = [97.2 + random.Random(i).uniform(-0.5, 0.5) - (7.5 if i in DIP else 0) - max(0, i - DRIFT) * 0.075 for i in range(200)]
 
 def s_bg(d, t, D, S, si, SA):
     header(d, "C · Running in the background", sub="V7 AI Solutions software on the server · 24/7")
@@ -1028,10 +1029,10 @@ def s_bg(d, t, D, S, si, SA):
             text(d, x1 - 20, y0 + 110, f"{pr:,}", 22, TXT if pr == sc else RED, "rm", "monob")
             ok = pr == sc
             rect(d, x0 + 20, y0 + 150, x1 - 20, y0 + 200, fill=mix(PANEL, GREEN if ok else RED, .15), outline=GREEN if ok else RED, w=1.5, r=8)
-            text(d, (x0 + x1) / 2, y0 + 175, "counts match" if ok else "⚠ 1 ring missed → alert", 15, GREEN if ok else RED, "mm", "b")
+            text(d, (x0 + x1) / 2, y0 + 175, "counts agree" if ok else "⚠ 1 ring missed → alert", 15, GREEN if ok else RED, "mm", "b")
             text(d, x0 + 20, y1 - 22, "a missed ring never slips by unnoticed", 11, DIM, "lm", "m")
         if i == 2:
-            n = int(clamp(lt / 9) * 199) + 1
+            n = int(clamp(lt / 13) * 199) + 1
             gx0, gx1, gy0, gy1 = x0 + 46, x1 - 20, y0 + 50, y1 - 50
             def gy(v): return lerp(gy1, gy0, (v - 85) / 15)
             for v in (90, 95, 100):
@@ -1040,10 +1041,14 @@ def s_bg(d, t, D, S, si, SA):
             text(d, gx1, gy(92) + 10, "alarm level", 10, RED, "rm", "s")
             pts = [(lerp(gx0, gx1, k / 199), gy(CONF[k])) for k in range(n)]
             if len(pts) > 1: line(d, pts, GOLD, 2)
-            if n > DIP.start:
-                rect(d, x0 + 16, y1 - 40, x1 - 16, y1 - 12, fill=mix(PANEL, RED, .2), outline=RED, w=1.5, r=6)
-                text(d, (x0 + x1) / 2, y1 - 26, "⚠ sudden dip in confidence score → alarm: check light / rust", 12, RED, "mm", "b")
-            else:
+            if n > DIP.stop:
+                xd = lerp(gx0, gx1, DIP.start / 199)
+                text(d, xd + 10, gy(88.5), "sudden dip: one ring", 10.5, ORANGE, "lm", "b")
+                text(d, x0 + 16, y1 - 34, "● sudden dip → a single ring (e.g. rust)", 11, ORANGE, "lm", "s")
+            if n > DRIFT + 30:
+                text(d, gx1, gy(97.2) - 14, "gradual drift", 10.5, RED, "rm", "b")
+                text(d, x0 + 16, y1 - 16, "● gradual drift → mechanical performance drop → alarm", 11, RED, "lm", "s")
+            if n <= DIP.stop:
                 text(d, x0 + 16, y1 - 22, "confidence score trend (example)", 11, DIM, "lm", "m")
         if i == 3:
             ax, bx_, y = x0 + 90, x1 - 90, y0 + 120

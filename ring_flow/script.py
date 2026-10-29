@@ -58,7 +58,7 @@ SCRIPT = [
         'Now, the angle.',
         'The software finds the slots, and works out how far the ring must turn, from zero to about eighty-nine degrees, always in the agreed direction.',
         "The slots are found by an ML model, trained on images of Technocraft's sample rings.",
-        "The result is matched to the ring's ID, so the right angle goes with the right ring.",
+        "The result is recorded against the ring's ID, so the right angle goes with the right ring.",
     ]),
     ('B · Signal 2 and the robot', [
         'Signal two sends the rotation angle to the robot.',
@@ -69,7 +69,7 @@ SCRIPT = [
         'Some things run in the background, all the time.',
         'Every image, decision, confidence score and signal is logged, by ring ID.',
         'The sensor count is compared with the rings processed, so no ring is missed unnoticed.',
-        'The confidence score is tracked over time, and an alarm is raised as soon as it suddenly dips, for example, from rust or a failing light.',
+        'The confidence score is tracked over time. A sudden dip points to a problem with a single ring, for example, rust. A gradual drift points to a performance drop in the mechanical system, and an alarm is raised early.',
         'A heartbeat between the server and the line controller triggers a safe stop, if the link drops.',
         'The operator screen shows live status, alerts, and recovery steps.',
         'If the power goes out, the UPS keeps the server running, uninterrupted.',

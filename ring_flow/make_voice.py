@@ -27,6 +27,7 @@ def main():
             if i < len(sents) - 1:
                 # natural, slightly uneven breathing gaps between sentences
                 gap = rnd.uniform(0.28, 0.42)
+                if si == len(SCRIPT) - 1 and i == len(sents) - 2: gap = 1.4   # pause before "Thank you"
                 parts.append(np.zeros(int(gap * SR), np.float32)); t += gap
         tail = max(TAIL, MIN_DUR.get(si, 0) - t)
         parts.append(np.zeros(int(tail * SR), np.float32)); t += tail
