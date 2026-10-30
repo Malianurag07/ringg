@@ -20,3 +20,7 @@ python make_voice.py kokoro-v1.0.onnx voices-v1.0.bin
 python render.py            # all scenes → ring_orientation_flow.mp4
 python render.py -1 5:12    # preview still of scene 5 at 12 s → build/
 ```
+
+## Using a recorded voice-over (e.g. ElevenLabs)
+
+`align/` fits a finished narration file to the script: `segs.py` splits it at pauses and transcribes each piece with Whisper, `match.py` finds where every script sentence starts, and `split.py` cuts it into `voice/sceneNN.wav` with matching `voice/timing.json`. Then run `render.py` as usual.
