@@ -10,8 +10,8 @@ from script import SCRIPT
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "voice")
 VOICE, SR = "hf_alpha", 24000
-SPEEDS = [1.0, 0.97, 1.03, 0.94]      # Kokoro is deterministic, so retries vary the pace slightly
-LEAD, TAIL = 0.4, 0.6
+SPEEDS = [1.04, 1.01, 1.07, 0.98]      # Kokoro is deterministic, so retries vary the pace slightly
+LEAD, TAIL = 0.35, 0.5
 MIN_DUR = {11: 22.0}
 NUM = {"0": "zero", "1": "one", "2": "two", "7": "seven", "10": "ten", "12": "twelve", "89": "eighty nine"}
 
@@ -53,7 +53,7 @@ def main():
             parts.append(a); t += len(a) / SR
             if i < len(sents) - 1:
                 # natural, slightly uneven breathing gaps; a longer pause before "Thank you"
-                gap = 1.4 if (si == len(SCRIPT) - 1 and i == len(sents) - 2) else rnd.uniform(0.32, 0.46)
+                gap = 1.4 if (si == len(SCRIPT) - 1 and i == len(sents) - 2) else rnd.uniform(0.28, 0.4)
                 parts.append(np.zeros(int(gap * SR), np.float32)); t += gap
         tail = max(TAIL, MIN_DUR.get(si, 0) - t)
         parts.append(np.zeros(int(tail * SR), np.float32)); t += tail
