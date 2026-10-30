@@ -1,15 +1,15 @@
-# Voice-over in an Indian English female voice: Kokoro "hf_beta" speaking Indian English pronunciation
+# Voice-over in an Indian English female voice: Kokoro "hf_alpha" speaking neutral Indian English pronunciation
 # (indian_english.py), checked sentence by sentence with Whisper. Writes voice/sceneNN.wav + voice/timing.json.
 # Usage: python make_voice_indian.py <kokoro-v1.0.onnx> <voices-v1.0.bin> <whisper dir>
 import difflib, json, os, random, re, sys
 import numpy as np, soundfile as sf, sherpa_onnx
 from kokoro_onnx import Kokoro
-from indian_english import indianize
+from indian_english import indianize, prepare
 from script import SCRIPT
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "voice")
-VOICE, SR = "hf_beta", 24000
+VOICE, SR = "hf_alpha", 24000
 SPEEDS = [1.0, 0.97, 1.03, 0.94]      # Kokoro is deterministic, so retries vary the pace slightly
 LEAD, TAIL = 0.4, 0.6
 MIN_DUR = {11: 22.0}
@@ -32,7 +32,7 @@ def main():
     def hear(a):
         s = asr.create_stream(); s.accept_waveform(SR, a); asr.decode_stream(s); return s.result.text
     def say(text):
-        ph = indianize(k.tokenizer.phonemize(text, "en-us"))
+        ph = indianize(k.tokenizer.phonemize(prepare(text), "en-gb"))
         best = None
         for sp in SPEEDS:
             a, sr = k.create(ph, voice=VOICE, speed=sp, is_phonemes=True); assert sr == SR
